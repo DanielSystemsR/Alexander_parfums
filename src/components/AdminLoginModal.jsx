@@ -3,8 +3,8 @@ import { Lock, KeyRound, ShieldAlert, X, Eye, EyeOff, Sparkles, CheckCircle2 } f
 import confetti from 'canvas-confetti'
 
 export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
-  const [email, setEmail] = useState('admin@alexanderparfums.com')
-  const [password, setPassword] = useState('admin123')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
@@ -66,11 +66,11 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
           </div>
           
           <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sky-950/60 border border-sky-400/40 text-sky-300 text-xs font-mono mb-2 shadow-[0_0_12px_rgba(56,189,248,0.2)]">
-            <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Easter Egg Desbloqueado
+            <Sparkles className="w-3.5 h-3.5 text-amber-300" /> Acceso Administrativo
           </div>
 
           <h2 className="font-serif-luxury text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-sky-300">
-            Bóveda Administrativa
+            Bóveda de Administración
           </h2>
           <p className="text-[11px] uppercase tracking-widest text-sky-400 font-mono mt-0.5">
             ALEXANDER MAISON DE PARFUMS
@@ -78,16 +78,6 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
           <p className="text-xs text-slate-400 mt-1">
             Acceso exclusivo para edición de precios, disponibilidad y gestión de catálogo.
           </p>
-        </div>
-
-        {/* MENSAJE DE CREDENCIALES POR DEFECTO */}
-        <div className="mb-5 p-3.5 rounded-xl bg-[#0e1629] border border-sky-500/30 text-[12px] text-sky-200 flex items-start gap-2.5 shadow-[inset_0_1px_1px_rgba(0,0,0,0.5)]">
-          <KeyRound className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-semibold text-amber-300 block">Credenciales preconfiguradas:</span>
-            Usuario: <span className="font-mono text-white">admin@alexanderparfums.com</span> (o <span className="font-mono text-white">admin</span>)<br/>
-            Clave: <span className="font-mono text-white">admin123</span>
-          </div>
         </div>
 
         {error && (

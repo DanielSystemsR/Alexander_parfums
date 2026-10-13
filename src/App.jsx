@@ -8,6 +8,7 @@ import EditPerfumeModal from './components/EditPerfumeModal'
 import AdminLoginModal from './components/AdminLoginModal'
 import AdminPanel from './components/AdminPanel'
 import ShoppingCart from './components/ShoppingCart'
+import FAQSection from './components/FAQSection'
 import Footer from './components/Footer'
 import { 
   fetchCategories, 
@@ -246,6 +247,8 @@ export default function App() {
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
         categories={categories}
+        perfumes={perfumes}
+        onSelectPerfume={(p) => setSelectedPerfume(p)}
         cartItemCount={totalCartItems}
         onOpenCart={() => setIsCartOpen(true)}
       />
@@ -365,6 +368,9 @@ export default function App() {
         )}
 
       </main>
+
+      {/* SECCIÓN DE PREGUNTAS FRECUENTES (FAQ) */}
+      <FAQSection />
 
       {/* PIE DE PÁGINA */}
       <Footer onTriggerEasterEgg={() => setIsLoginModalOpen(true)} />

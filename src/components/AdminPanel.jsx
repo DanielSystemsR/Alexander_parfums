@@ -1,10 +1,9 @@
 import React, { useState } from 'react'
 import { 
   X, Plus, Edit2, Trash2, ToggleLeft, ToggleRight, DollarSign, 
-  Layers, Package, CheckCircle2, XCircle, Sparkles, Database, 
-  Search, Save, Copy, Check, ShieldAlert, ArrowLeft
+  Layers, Package, CheckCircle2, XCircle, Sparkles, 
+  Search, Save, ShieldAlert, ArrowLeft
 } from 'lucide-react'
-import { SUPABASE_SQL_SCHEMA } from '../lib/supabase'
 
 export default function AdminPanel({
   isOpen,
@@ -21,14 +20,13 @@ export default function AdminPanel({
 }) {
   if (!isOpen) return null
 
-  const [activeTab, setActiveTab] = useState('summary') // 'summary' | 'new-perfume' | 'categories' | 'supabase'
+  const [activeTab, setActiveTab] = useState('summary') // 'summary' | 'new-perfume' | 'categories'
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
 
   // Estado para edición inline rápida de precios
   const [editingPriceId, setEditingPriceId] = useState(null)
   const [tempPrice, setTempPrice] = useState('')
-  const [copiedSql, setCopiedSql] = useState(false)
 
   // Formulario para nuevo perfume
   const [newPerfume, setNewPerfume] = useState({
@@ -111,13 +109,6 @@ export default function AdminPanel({
     })
     setNewCategoryName('')
     setNewCategoryDesc('')
-  }
-
-  // Copiar SQL
-  const handleCopySql = () => {
-    navigator.clipboard.writeText(SUPABASE_SQL_SCHEMA)
-    setCopiedSql(true)
-    setTimeout(() => setCopiedSql(false), 2500)
   }
 
   return (
@@ -207,17 +198,6 @@ export default function AdminPanel({
             </span>
           </button>
 
-          <button
-            onClick={() => setActiveTab('supabase')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
-              activeTab === 'supabase'
-                ? 'bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
-                : 'text-slate-400 hover:text-white hover:bg-white/5'
-            }`}
-          >
-            <Database className="w-4 h-4 text-amber-300" />
-            <span>Supabase & SQL</span>
-          </button>
         </div>
 
         {/* CONTENIDO PRINCIPAL POR PESTAÑA */}
@@ -901,53 +881,6 @@ export default function AdminPanel({
                 </div>
               </div>
 
-            </div>
-          )}
-
-          {/* =========================================
-              PESTAÑA 4: SUPABASE & SQL
-             ========================================= */}
-          {activeTab === 'supabase' && (
-            <div className="max-w-4xl mx-auto space-y-6">
-              <div className="p-6 rounded-3xl bg-[#131523] border border-amber-500/20">
-                <div className="flex items-start justify-between gap-4 mb-4">
-                  <div>
-                    <h3 className="font-serif-luxury text-xl font-bold text-white flex items-center gap-2">
-                      <Database className="w-5 h-5 text-amber-400" /> Integración con Supabase & Vercel
-                    </h3>
-                    <p className="text-xs text-gray-300 mt-1">
-                      El catálogo funciona actualmente con almacenamiento reactivo persistente y está preparado para conectarse a tu base de datos Supabase en vivo en segundos.
-                    </p>
-                  </div>
-
-                  <button
-                    onClick={handleCopySql}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-amber-400 hover:bg-amber-300 text-black flex items-center gap-1.5 shadow-md shrink-0"
-                  >
-                    {copiedSql ? <Check className="w-4 h-4" /> : <Copy className="w-4 h-4" />}
-                    <span>{copiedSql ? '¡Copiado!' : 'Copiar Script SQL'}</span>
-                  </button>
-                </div>
-
-                <div className="bg-[#0b0c13] rounded-2xl p-4 border border-white/10 font-mono text-xs text-gray-300 max-h-64 overflow-y-auto">
-                  <pre>{SUPABASE_SQL_SCHEMA}</pre>
-                </div>
-
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs text-gray-400">
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <span className="font-semibold text-white block mb-1">1. Crea tu proyecto</span>
-                    Regístrate gratis en <a href="https://supabase.com" target="_blank" rel="noreferrer" className="text-amber-400 underline">supabase.com</a> y crea un nuevo proyecto.
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <span className="font-semibold text-white block mb-1">2. Ejecuta el SQL</span>
-                    Ve a "SQL Editor" en Supabase, pega el script de arriba y presiona "RUN".
-                  </div>
-                  <div className="p-3 rounded-xl bg-white/[0.02] border border-white/5">
-                    <span className="font-semibold text-white block mb-1">3. Conecta Vercel</span>
-                    Agrega `VITE_SUPABASE_URL` y `VITE_SUPABASE_ANON_KEY` en las Environment Variables de Vercel.
-                  </div>
-                </div>
-              </div>
             </div>
           )}
 
