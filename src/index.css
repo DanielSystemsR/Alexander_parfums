@@ -1,0 +1,148 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --gold-primary: #d4af37;
+    --gold-light: #f5e7a3;
+    --gold-dark: #aa820a;
+    --chrome-blue-bright: #38bdf8;
+    --chrome-blue-deep: #0284c7;
+    --chrome-blue-metal: #7dd3fc;
+    --dark-bg: #05060a;
+    --dark-card: #0c0f18;
+  }
+
+  body {
+    background-color: #05060a;
+    color: #f1f5f9;
+    font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* Custom luxury scrollbar with chrome blue & gold accent */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: #080a10;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, #d4af37 0%, #0284c7 100%);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, #f5e7a3 0%, #38bdf8 100%);
+  }
+}
+
+.font-serif-luxury {
+  font-family: 'Playfair Display', Georgia, serif;
+}
+
+/* DEGRADADO DORADO */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #fff2be 0%, #d4af37 50%, #996515 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* RELIEVE AZUL CROMADO */
+.chrome-blue-text {
+  background: linear-gradient(135deg, #ffffff 0%, #7dd3fc 35%, #0284c7 70%, #0c4a6e 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* RELIEVE BICOLOR DORADO & AZUL CROMADO */
+.gold-chrome-gradient-text {
+  background: linear-gradient(135deg, #fff2be 0%, #d4af37 40%, #38bdf8 80%, #7dd3fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* EFECTO DE RELIEVE EN AZUL CROMADO (CHROME RELIEF BORDER & SHADOW) */
+.chrome-relief {
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  box-shadow: 
+    0 0 0 1px rgba(56, 189, 248, 0.2),
+    0 8px 24px -4px rgba(2, 132, 199, 0.25),
+    inset 0 1px 1px 0 rgba(255, 255, 255, 0.35),
+    inset 0 -1px 2px 0 rgba(2, 132, 199, 0.3);
+}
+
+.chrome-relief-subtle {
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  box-shadow: 
+    0 4px 20px -2px rgba(2, 132, 199, 0.15),
+    inset 0 1px 0 0 rgba(255, 255, 255, 0.15);
+}
+
+.chrome-relief-hover:hover {
+  border-color: rgba(56, 189, 248, 0.6);
+  box-shadow: 
+    0 0 25px rgba(56, 189, 248, 0.35),
+    0 10px 30px -5px rgba(2, 132, 199, 0.4),
+    inset 0 1px 2px 0 rgba(255, 255, 255, 0.5);
+  transform: translateY(-2px);
+}
+
+/* PANELES DE VIDRIO OSCURO OBSIDIANA CON BISEL CROMADO */
+.glass-panel {
+  background: rgba(10, 13, 22, 0.82);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(212, 175, 55, 0.2);
+  box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.7), 0 0 20px rgba(2, 132, 199, 0.1);
+}
+
+.glass-panel-chrome {
+  background: rgba(8, 11, 18, 0.88);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(56, 189, 248, 0.25);
+  box-shadow: 
+    0 12px 35px -8px rgba(0, 0, 0, 0.8),
+    0 0 25px rgba(2, 132, 199, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* BOTÓN CROMADO RELIEVE */
+.btn-chrome-gold {
+  background: linear-gradient(135deg, #d4af37 0%, #f5e7a3 40%, #c59b27 100%);
+  color: #05060a;
+  box-shadow: 
+    0 0 0 1px rgba(212, 175, 55, 0.4),
+    0 4px 15px rgba(212, 175, 55, 0.3),
+    inset 0 1px 1px rgba(255, 255, 255, 0.6);
+}
+
+.btn-chrome-blue {
+  background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #0369a1 100%);
+  color: #ffffff;
+  box-shadow: 
+    0 0 0 1px rgba(56, 189, 248, 0.5),
+    0 4px 15px rgba(2, 132, 199, 0.35),
+    inset 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+/* ANIMACIONES */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes bounceOnce {
+  0%, 100% { transform: scale(1); }
+  30% { transform: scale(1.35); }
+  60% { transform: scale(0.9); }
+  80% { transform: scale(1.1); }
+}
+
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.animate-bounce-once {
+  animation: bounceOnce 0.5s ease-out;
+}
