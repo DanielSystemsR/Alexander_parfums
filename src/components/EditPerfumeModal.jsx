@@ -60,7 +60,7 @@ export default function EditPerfumeModal({ perfume, isOpen, onClose, onSave, cat
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in">
+    <div className="fixed inset-0 z-[70] flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in">
       <div 
         className="relative w-full max-w-2xl bg-[#090d18] border border-sky-400/40 rounded-3xl overflow-hidden shadow-[0_0_60px_rgba(2,132,199,0.35),inset_0_1px_1px_rgba(255,255,255,0.25)] text-slate-100 max-h-[90vh] flex flex-col"
         onClick={(e) => e.stopPropagation()}

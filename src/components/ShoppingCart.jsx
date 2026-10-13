@@ -15,7 +15,8 @@ export default function ShoppingCart({ isOpen, onClose, cartItems, onUpdateQuant
 
   // Construir mensaje para WhatsApp con resumen del pedido
   const buildWhatsAppMessage = () => {
-    let msg = `🛍️ *PEDIDO — ALEXANDER MAISON DE PARFUMS*\n\n`
+    let msg = `🛍️ *PEDIDO — EL ATELIER DEL AROMA*\n`
+    msg += `✨ *La Excelencia en Perfumería Multimarca*\n\n`
     msg += `Hola, me gustaría ordenar los siguientes perfumes:\n\n`
 
     cartItems.forEach((item, i) => {
@@ -32,7 +33,7 @@ export default function ShoppingCart({ isOpen, onClose, cartItems, onUpdateQuant
     return encodeURIComponent(msg)
   }
 
-  const whatsappUrl = `https://wa.me/?text=${buildWhatsAppMessage()}`
+  const whatsappUrl = `https://wa.me/584127661800?text=${buildWhatsAppMessage()}`
 
   if (!isOpen) return null
 

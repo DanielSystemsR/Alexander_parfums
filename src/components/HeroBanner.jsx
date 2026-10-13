@@ -19,7 +19,7 @@ export default function HeroBanner({ totalPerfumes, totalCategories }) {
 
             <img
               src="/logo.png"
-              alt="ALEXANDER MAISON DE PARFUMS"
+              alt="EL ATELIER DEL AROMA"
               className="relative h-28 sm:h-36 md:h-44 w-auto object-contain drop-shadow-[0_12px_30px_rgba(212,175,55,0.4)] group-hover:scale-105 transition-transform duration-500"
             />
           </div>
@@ -28,17 +28,21 @@ export default function HeroBanner({ totalPerfumes, totalCategories }) {
         {/* INSIGNIA CON RELIEVE EN AZUL CROMADO */}
         <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-gradient-to-r from-[#0c1527] via-[#070e1c] to-[#0c1527] border border-sky-400/40 text-sky-200 text-xs sm:text-sm font-medium mb-4 shadow-[0_0_20px_rgba(56,189,248,0.25),inset_0_1px_1px_rgba(255,255,255,0.3)]">
           <Gem className="w-3.5 h-3.5 text-amber-400" />
-          <span className="tracking-wide">Curaduría de Alta Perfumería & Fragancias Nicho</span>
+          <span className="tracking-wide">Curaduría de Alta Perfumería Multimarca</span>
         </div>
 
         {/* TÍTULO PRINCIPAL CON RELIEVE EN AZUL CROMADO Y ORO */}
-        <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-4 leading-tight">
-          ALEXANDER <span className="chrome-blue-text font-serif-luxury">MAISON DE PARFUMS</span>
+        <h1 className="font-serif-luxury text-3xl sm:text-5xl lg:text-6xl font-bold tracking-tight text-white mb-2 leading-tight">
+          EL ATELIER <span className="chrome-blue-text font-serif-luxury">DEL AROMA</span>
         </h1>
+
+        <p className="text-xs sm:text-sm tracking-[0.25em] text-amber-300 uppercase font-semibold font-mono mb-4">
+          LA EXCELENCIA EN PERFUMERÍA MULTIMARCA
+        </p>
 
         {/* SUBTÍTULO */}
         <p className="max-w-2xl mx-auto text-sm sm:text-base text-slate-300 font-light leading-relaxed mb-8">
-          Explora nuestra selecta curaduría de elixires, extractos y fragancias de Estela inconfundible, longevidad extrema y autenticidad garantizada.
+          Explora nuestra selecta curaduría multimarca de fragancias originales, elixires y extractos de estela inconfundible, longevidad extrema y autenticidad garantizada.
         </p>
 
         {/* CINTA DE CONFIANZA CON RELIEVE METÁLICO CROMADO */}

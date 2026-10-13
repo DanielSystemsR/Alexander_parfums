@@ -123,16 +123,16 @@ export default function AdminPanel({
             <div className="relative p-1 rounded-xl border border-sky-500/40 bg-black/70 overflow-hidden shrink-0 shadow-[0_0_15px_rgba(56,189,248,0.25)]">
               <img 
                 src="/logo.png" 
-                alt="ALEXANDER MAISON DE PARFUMS" 
+                alt="EL ATELIER DEL AROMA" 
                 className="h-10 w-auto object-contain drop-shadow" 
               />
             </div>
             <div>
               <h2 className="font-serif-luxury text-xl sm:text-2xl font-bold text-white flex items-center gap-2">
-                ALEXANDER <span className="text-sky-300 font-sans text-xs tracking-widest font-semibold px-2.5 py-0.5 rounded-full bg-sky-950/80 border border-sky-400/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]">PANEL PRIVADO</span>
+                EL ATELIER DEL AROMA <span className="text-sky-300 font-sans text-xs tracking-widest font-semibold px-2.5 py-0.5 rounded-full bg-sky-950/80 border border-sky-400/40 shadow-[0_0_10px_rgba(56,189,248,0.2)]">PANEL PRIVADO</span>
               </h2>
               <p className="text-xs text-amber-300/80 font-mono">
-                Maison de Parfums • Control de Precios, Stock y Familias Olfativas
+                La Excelencia en Perfumería Multimarca • Control de Precios, Stock y Familias Olfativas
               </p>
             </div>
           </div>

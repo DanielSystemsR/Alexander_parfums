@@ -10,9 +10,9 @@ export default function PerfumeCard({
   onAddToCart
 }) {
   const whatsappMessage = encodeURIComponent(
-    `Hola ALEXANDER MAISON DE PARFUMS, me interesa el perfume ${perfume.name} (${perfume.brand}) de $${perfume.price} USD. ¿Sigue disponible?`
+    `Hola EL ATELIER DEL AROMA, me interesa el perfume ${perfume.name} (${perfume.brand}) de $${perfume.price} USD. ¿Sigue disponible?`
   )
-  const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`
+  const whatsappUrl = `https://wa.me/584127661800?text=${whatsappMessage}`
 
   return (
     <div className={`group relative bg-[#0a0d16] rounded-2xl overflow-hidden transition-all duration-300 flex flex-col justify-between ${

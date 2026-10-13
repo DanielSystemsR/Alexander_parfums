@@ -5,9 +5,9 @@ export default function PerfumeDetailModal({ perfume, isOpen, onClose, onAddToCa
   if (!isOpen || !perfume) return null
 
   const whatsappMessage = encodeURIComponent(
-    `Hola ALEXANDER MAISON DE PARFUMS, me gustaría ordenar el perfume "${perfume.name}" de ${perfume.brand} ($${perfume.price} USD). ¿Tienen disponibilidad inmediata para despacho?`
+    `Hola EL ATELIER DEL AROMA, me gustaría ordenar el perfume "${perfume.name}" de ${perfume.brand} ($${perfume.price} USD). ¿Tienen disponibilidad inmediata para despacho?`
   )
-  const whatsappUrl = `https://wa.me/?text=${whatsappMessage}`
+  const whatsappUrl = `https://wa.me/584127661800?text=${whatsappMessage}`
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 bg-black/90 backdrop-blur-md animate-fade-in" onClick={onClose}>

@@ -271,7 +271,7 @@ export default function App() {
               </div>
               <div>
                 <span className="font-semibold text-sky-200 text-sm block">
-                  Modo Administrador Activo • ALEXANDER
+                  Modo Administrador Activo • EL ATELIER DEL AROMA
                 </span>
                 <span className="text-xs text-amber-300/80">
                   Puedes editar precios o disponibilidad directamente en cada tarjeta o abrir el panel general.
@@ -383,15 +383,6 @@ export default function App() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* MODAL DE EDICIÓN COMPLETA (ADMIN) */}
-      <EditPerfumeModal
-        perfume={editingPerfume}
-        isOpen={Boolean(editingPerfume)}
-        onClose={() => setEditingPerfume(null)}
-        onSave={handleSaveFullPerfume}
-        categories={categories}
-      />
-
       {/* MODAL DE LOGIN ADMIN (EASTER EGG) */}
       <AdminLoginModal
         isOpen={isLoginModalOpen}
@@ -412,6 +403,15 @@ export default function App() {
         onCreateCategory={handleCreateCategory}
         onDeleteCategory={handleDeleteCategory}
         onEditPerfumeModal={(p) => setEditingPerfume(p)}
+      />
+
+      {/* MODAL DE EDICIÓN COMPLETA (ADMIN) - Renderizado sobre el AdminPanel con z-[70] */}
+      <EditPerfumeModal
+        perfume={editingPerfume}
+        isOpen={Boolean(editingPerfume)}
+        onClose={() => setEditingPerfume(null)}
+        onSave={handleSaveFullPerfume}
+        categories={categories}
       />
 
       {/* CARRITO DE COMPRAS */}

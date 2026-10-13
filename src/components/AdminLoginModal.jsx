@@ -19,7 +19,8 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
     setTimeout(() => {
       // Credenciales válidas para el Easter Egg
       const isValid = 
-        (email.trim().toLowerCase() === 'admin@alexanderparfums.com' || 
+        (email.trim().toLowerCase() === 'admin@elatelierdelaroma.com' || 
+         email.trim().toLowerCase() === 'admin@alexanderparfums.com' || 
          email.trim().toLowerCase() === 'admin@auraparfums.com' || 
          email.trim().toLowerCase() === 'admin') &&
         password === 'admin123'
@@ -60,7 +61,7 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
             <div className="absolute inset-0 bg-gradient-to-r from-sky-500/20 via-amber-400/20 to-sky-400/20 blur-xl rounded-full scale-110 pointer-events-none" />
             <img 
               src="/logo.png" 
-              alt="ALEXANDER MAISON DE PARFUMS" 
+              alt="EL ATELIER DEL AROMA" 
               className="relative h-20 w-auto object-contain drop-shadow-[0_4px_15px_rgba(212,175,55,0.4)]" 
             />
           </div>
@@ -72,8 +73,11 @@ export default function AdminLoginModal({ isOpen, onClose, onLoginSuccess }) {
           <h2 className="font-serif-luxury text-2xl font-bold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-300 to-sky-300">
             Bóveda de Administración
           </h2>
-          <p className="text-[11px] uppercase tracking-widest text-sky-400 font-mono mt-0.5">
-            ALEXANDER MAISON DE PARFUMS
+          <p className="text-[10px] uppercase tracking-widest text-sky-400 font-mono mt-0.5">
+            EL ATELIER DEL AROMA
+          </p>
+          <p className="text-[9px] uppercase tracking-widest text-amber-300/80 font-mono">
+            LA EXCELENCIA EN PERFUMERÍA MULTIMARCA
           </p>
           <p className="text-xs text-slate-400 mt-1">
             Acceso exclusivo para edición de precios, disponibilidad y gestión de catálogo.

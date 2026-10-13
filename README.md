@@ -1,30 +1,28 @@
-# 💎 ALEXANDER MAISON DE PARFUMS - Catálogo Exclusivo de Alta Perfumería
+# 💎 EL ATELIER DEL AROMA - La Excelencia en Perfumería Multimarca
 
-Catálogo moderno de perfumes con panel administrativo oculto mediante Easter Egg, desarrollado con **React**, **Tailwind CSS**, **Supabase** y listo para despliegue en **Vercel**.
+Catálogo moderno de perfumes con carrito de compras y panel administrativo oculto mediante Easter Egg, desarrollado con **React**, **Tailwind CSS**, **Supabase** y listo para despliegue en **Vercel**.
 
 ---
 
 ## ✨ Características Principales
 
 ### 🛍️ Vista de Clientes
-- **Identidad de Marca**: Incorpora la herencia y monograma de **ALEXANDER MAISON DE PARFUMS (Est. 2024)**.
+- **Identidad de Marca**: Incorpora la herencia y monograma de **EL ATELIER DEL AROMA • LA EXCELENCIA EN PERFUMERÍA MULTIMARCA**.
 - **Catálogo por Categorías**: Filtrado dinámico por familias olfativas (Amaderados, Cítricos, Florales, Gourmand, Cuero, etc.).
 - **Información Detallada**: Nombre, casa/marca, precio ($ USD), estado en tiempo real (**Disponible** o **Agotado**), concentración y volumen.
-- **Buscador Inteligente**: Búsqueda instantánea por nombre de perfume, marca o notas olfativas.
-- **Filtros Avanzados**: Filtrar por solo disponibles o agotados, y ordenar por precio (menor/mayor) o destacados.
-- **Modal de Detalle & Pedidos**: Muestra la pirámide olfativa (notas de salida, corazón y fondo) y botón directo de compra vía WhatsApp con mensaje pre-rellenado.
+- **Buscador Inteligente**: Búsqueda instantánea con 3 a 4 sugerencias en tiempo real por nombre de perfume o marca.
+- **Carrito de Compras**: Selección múltiple de artículos con control de cantidad y ticket directo a WhatsApp (+58 412 7661800).
+- **Filtros Avanzados**: Filtrar por solo disponibles o agotados, y ordenar por precio o destacados.
+- **Modal de Detalle & Pedidos**: Muestra la pirámide olfativa y botón directo de compra vía WhatsApp.
 
 ---
 
 ### 👑 Panel Administrativo Oculto (Easter Egg)
 El panel administrativo no está visible a simple vista para los clientes:
 - **Cómo Activar el Easter Egg**:
-  1. **Opción 1 (Clics rápidos)**: Haz clic **5 veces seguidas** en el logotipo / monograma dorado de **ALEXANDER** en la barra superior.
+  1. **Opción 1 (Clics rápidos)**: Haz clic **5 veces seguidas** en el logotipo / monograma dorado en la barra superior (acceso silencioso sin contador público).
   2. **Opción 2 (Atajo de teclado)**: Presiona <kbd>Ctrl + Shift + A</kbd> en cualquier momento.
   3. **Opción 3 (Bóveda en Footer)**: Haz clic en el discreto icono de candado **"Vault"** en el pie de página.
-- **Credenciales por Defecto**:
-  - **Usuario**: `admin@alexanderparfums.com` (o simplemente `admin`)
-  - **Contraseña**: `admin123`
 
 ---
 

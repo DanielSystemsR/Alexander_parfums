@@ -110,14 +110,14 @@ export default function Navbar({
           <div className="flex items-center gap-3">
             <button
               onClick={handleEasterEggClick}
-              title={isAdmin ? "Administrador activo" : "ALEXANDER MAISON DE PARFUMS"}
+              title={isAdmin ? "Administrador activo" : "EL ATELIER DEL AROMA"}
               className="group relative flex items-center gap-3 text-left focus:outline-none transition-transform active:scale-95"
             >
               {/* LOGO TRANSPARENTE CON RELIEVE AZUL CROMADO Y RESPLANDOR DORADO */}
               <div className="relative p-1 rounded-xl bg-gradient-to-b from-[#0a0f1d] to-[#05060a] border border-sky-500/30 group-hover:border-sky-400 shadow-[0_0_15px_rgba(2,132,199,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)] group-hover:shadow-[0_0_25px_rgba(56,189,248,0.4),inset_0_1px_2px_rgba(255,255,255,0.4)] transition-all flex items-center justify-center">
                 <img 
                   src="/logo.png" 
-                  alt="ALEXANDER MAISON DE PARFUMS" 
+                  alt="EL ATELIER DEL AROMA" 
                   className="h-11 sm:h-12 w-auto object-contain drop-shadow-[0_0_10px_rgba(212,175,55,0.45)] group-hover:scale-105 transition-transform duration-300"
                 />
                 {isAdmin && (
@@ -128,16 +128,12 @@ export default function Navbar({
               </div>
 
               <div className="hidden sm:block">
-                <span className="block font-serif-luxury text-xl sm:text-2xl tracking-[0.25em] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-sky-300">
-                  ALEXANDER
+                <span className="block font-serif-luxury text-base sm:text-lg tracking-[0.15em] font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-amber-400 to-sky-300 whitespace-nowrap">
+                  EL ATELIER DEL AROMA
                 </span>
                 <div className="flex items-center gap-1.5 -mt-0.5">
-                  <span className="text-[9px] tracking-[0.3em] text-sky-400 font-semibold uppercase">
-                    Maison de Parfums
-                  </span>
-                  <span className="w-1 h-1 rounded-full bg-amber-400 inline-block" />
-                  <span className="text-[9px] tracking-[0.2em] text-amber-300/80 font-mono">
-                    Est. 2024
+                  <span className="text-[8.5px] tracking-[0.15em] text-sky-400 font-semibold uppercase whitespace-nowrap">
+                    LA EXCELENCIA EN PERFUMERÍA MULTIMARCA
                   </span>
                 </div>
               </div>

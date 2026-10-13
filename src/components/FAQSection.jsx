@@ -6,7 +6,7 @@ const FAQ_DATA = [
     id: 1,
     icon: ShieldCheck,
     question: "¿Las fragancias son 100% auténticas y originales?",
-    answer: "Absolutamente. En ALEXANDER MAISON DE PARFUMS comercializamos únicamente lotes legítimos, sellados y con códigos batch verificables directamente con las casas matrices de Europa, Medio Oriente y Estados Unidos. No manejamos réplicas, testeadores genéricos ni imitaciones bajo ningún concepto."
+    answer: "Absolutamente. En EL ATELIER DEL AROMA comercializamos únicamente lotes legítimos, sellados y con códigos batch verificables directamente con las casas matrices de Europa, Medio Oriente y Estados Unidos. No manejamos réplicas, testeadores genéricos ni imitaciones bajo ningún concepto."
   },
   {
     id: 2,
@@ -48,8 +48,8 @@ export default function FAQSection() {
   }
 
   const handleWhatsAppHelp = () => {
-    const text = encodeURIComponent("¡Hola ALEXANDER MAISON DE PARFUMS! Tengo una consulta sobre una fragancia de su catálogo.")
-    window.open(`https://wa.me/584120000000?text=${text}`, '_blank')
+    const text = encodeURIComponent("¡Hola EL ATELIER DEL AROMA! Tengo una consulta sobre una fragancia de su catálogo.")
+    window.open(`https://wa.me/584127661800?text=${text}`, '_blank')
   }
 
   return (
