@@ -112,13 +112,13 @@ export default function AdminPanel({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 bg-black/90 backdrop-blur-xl animate-fade-in">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-1 sm:p-6 bg-black/90 backdrop-blur-xl animate-fade-in">
       <div 
-        className="relative w-full max-w-6xl bg-[#070a14] border border-sky-400/40 rounded-3xl shadow-[0_0_80px_rgba(2,132,199,0.35),inset_0_1px_1px_rgba(255,255,255,0.25)] text-slate-100 flex flex-col h-[92vh] overflow-hidden"
+        className="relative w-full max-w-6xl bg-[#070a14] border border-sky-400/40 rounded-2xl sm:rounded-3xl shadow-[0_0_80px_rgba(2,132,199,0.35),inset_0_1px_1px_rgba(255,255,255,0.25)] text-slate-100 flex flex-col h-[96vh] sm:h-[92vh] overflow-hidden"
         onClick={(e) => e.stopPropagation()}
       >
         {/* CABECERA DEL PANEL */}
-        <div className="p-4 sm:p-6 border-b border-sky-500/20 bg-[#04060e] flex flex-wrap items-center justify-between gap-4">
+        <div className="p-3 sm:p-6 border-b border-sky-500/20 bg-[#04060e] flex flex-wrap items-center justify-between gap-3 sm:gap-4">
           <div className="flex items-center gap-3">
             <div className="relative p-1 rounded-xl border border-sky-500/40 bg-black/70 overflow-hidden shrink-0 shadow-[0_0_15px_rgba(56,189,248,0.25)]">
               <img 
@@ -155,137 +155,136 @@ export default function AdminPanel({
         </div>
 
         {/* NAVEGACIÓN DE PESTAÑAS */}
-        <div className="flex items-center gap-2 px-4 sm:px-6 pt-3 pb-2 bg-[#050812] border-b border-sky-500/15 overflow-x-auto scrollbar-none">
+        <div className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-6 pt-2.5 sm:pt-3 pb-2 bg-[#050812] border-b border-sky-500/15 overflow-x-auto scrollbar-none">
           <button
             onClick={() => setActiveTab('summary')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
               activeTab === 'summary'
                 ? 'bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Package className="w-4 h-4 text-amber-300" />
-            <span>Catálogo Resumido & Precios</span>
-            <span className="text-[11px] px-1.5 py-0.2 rounded-full bg-black/30 text-current border border-white/10 font-mono">
+            <Package className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+            <span>Catálogo & Precios</span>
+            <span className="text-[10px] sm:text-[11px] px-1.5 py-0.2 rounded-full bg-black/30 text-current border border-white/10 font-mono">
               {totalPerfumes}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('new-perfume')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
               activeTab === 'new-perfume'
                 ? 'bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Plus className="w-4 h-4 text-amber-300" />
-            <span>+ Ingresar Nuevo Perfume</span>
+            <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+            <span>+ Nuevo Perfume</span>
           </button>
 
           <button
             onClick={() => setActiveTab('categories')}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold whitespace-nowrap transition-all ${
               activeTab === 'categories'
                 ? 'bg-gradient-to-r from-sky-500 via-blue-500 to-sky-600 text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35),inset_0_1px_1px_rgba(255,255,255,0.4)]'
                 : 'text-slate-400 hover:text-white hover:bg-white/5'
             }`}
           >
-            <Layers className="w-4 h-4 text-amber-300" />
-            <span>Gestión de Categorías</span>
-            <span className="text-[11px] px-1.5 py-0.2 rounded-full bg-black/30 text-current border border-white/10 font-mono">
+            <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+            <span>Categorías</span>
+            <span className="text-[10px] sm:text-[11px] px-1.5 py-0.2 rounded-full bg-black/30 text-current border border-white/10 font-mono">
               {totalCategoriesCount}
             </span>
           </button>
-
         </div>
 
         {/* CONTENIDO PRINCIPAL POR PESTAÑA */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
+        <div className="flex-1 overflow-y-auto p-2.5 sm:p-6 space-y-3.5 sm:space-y-6">
           
           {/* =========================================
               PESTAÑA 1: CATÁLOGO RESUMIDO & EDICIÓN
              ========================================= */}
           {activeTab === 'summary' && (
-            <div className="space-y-6">
-              {/* TARJETAS DE MÉTRICAS */}
-              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-4">
-                <div className="p-4 rounded-2xl bg-[#090d18] border border-sky-500/25 shadow-[0_4px_15px_rgba(2,132,199,0.15),inset_0_1px_0_rgba(255,255,255,0.1)]">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+            <div className="space-y-3.5 sm:space-y-6">
+              {/* TARJETAS DE MÉTRICAS COMPACTAS EN MÓVIL */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-sky-500/25 shadow-[0_4px_15px_rgba(2,132,199,0.15)]">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1">
                     <span>Total Perfumes</span>
-                    <Package className="w-4 h-4 text-sky-400" />
+                    <Package className="w-3.5 h-3.5 text-sky-400" />
                   </div>
-                  <div className="text-2xl font-bold font-serif-luxury text-white">
+                  <div className="text-lg sm:text-2xl font-bold font-serif-luxury text-white">
                     {totalPerfumes}
                   </div>
-                  <span className="text-[11px] text-slate-500">en inventario</span>
+                  <span className="text-[9px] sm:text-[11px] text-slate-500">en inventario</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#090d18] border border-emerald-500/30 shadow-[0_4px_15px_rgba(16,185,129,0.15)]">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-emerald-500/30 shadow-[0_4px_15px_rgba(16,185,129,0.15)]">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1">
                     <span>Disponibles</span>
-                    <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                   </div>
-                  <div className="text-2xl font-bold font-serif-luxury text-emerald-300">
+                  <div className="text-lg sm:text-2xl font-bold font-serif-luxury text-emerald-300">
                     {totalAvailable}
                   </div>
-                  <span className="text-[11px] text-emerald-500/80 font-mono">listos para venta</span>
+                  <span className="text-[9px] sm:text-[11px] text-emerald-500/80 font-mono">listos para venta</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#090d18] border border-rose-500/30 shadow-[0_4px_15px_rgba(244,63,94,0.15)]">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-rose-500/30 shadow-[0_4px_15px_rgba(244,63,94,0.15)]">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1">
                     <span>Agotados</span>
-                    <XCircle className="w-4 h-4 text-rose-400" />
+                    <XCircle className="w-3.5 h-3.5 text-rose-400" />
                   </div>
-                  <div className="text-2xl font-bold font-serif-luxury text-rose-300">
+                  <div className="text-lg sm:text-2xl font-bold font-serif-luxury text-rose-300">
                     {totalSoldOut}
                   </div>
-                  <span className="text-[11px] text-rose-500/80 font-mono">por reabastecer</span>
+                  <span className="text-[9px] sm:text-[11px] text-rose-500/80 font-mono">por reabastecer</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#090d18] border border-sky-500/25 shadow-[0_4px_15px_rgba(2,132,199,0.15)]">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-sky-500/25 shadow-[0_4px_15px_rgba(2,132,199,0.15)]">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1">
                     <span>Categorías</span>
-                    <Layers className="w-4 h-4 text-sky-400" />
+                    <Layers className="w-3.5 h-3.5 text-sky-400" />
                   </div>
-                  <div className="text-2xl font-bold font-serif-luxury text-white">
+                  <div className="text-lg sm:text-2xl font-bold font-serif-luxury text-white">
                     {totalCategoriesCount}
                   </div>
-                  <span className="text-[11px] text-slate-500 font-mono">familias olfativas</span>
+                  <span className="text-[9px] sm:text-[11px] text-slate-500 font-mono">familias olfativas</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#090d18] border border-amber-500/30 shadow-[0_4px_15px_rgba(212,175,55,0.15)] col-span-2 lg:col-span-1">
-                  <div className="flex items-center justify-between text-xs text-slate-400 mb-1">
+                <div className="p-2.5 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-amber-500/30 shadow-[0_4px_15px_rgba(212,175,55,0.15)] col-span-2 sm:col-span-1 lg:col-span-1">
+                  <div className="flex items-center justify-between text-[10px] sm:text-xs text-slate-400 mb-0.5 sm:mb-1">
                     <span>Valor Inventario</span>
-                    <DollarSign className="w-4 h-4 text-amber-400" />
+                    <DollarSign className="w-3.5 h-3.5 text-amber-400" />
                   </div>
-                  <div className="text-2xl font-bold font-serif-luxury text-amber-300">
+                  <div className="text-lg sm:text-2xl font-bold font-serif-luxury text-amber-300">
                     ${totalInventoryValue.toLocaleString()}
                   </div>
-                  <span className="text-[11px] text-amber-500/80 font-mono">USD acumulado</span>
+                  <span className="text-[9px] sm:text-[11px] text-amber-500/80 font-mono">USD acumulado</span>
                 </div>
               </div>
 
               {/* BARRA DE FILTROS Y BÚSQUEDA DEL ADMIN */}
-              <div className="flex flex-wrap items-center justify-between gap-3 p-3 rounded-2xl bg-[#141624] border border-white/5">
-                <div className="flex items-center gap-3 flex-1 min-w-[240px]">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2.5 sm:gap-3 p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-[#141624] border border-white/5">
+                <div className="flex items-center gap-2 flex-1">
                   <div className="relative flex-1">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-gray-400" />
                     <input
                       type="text"
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
-                      placeholder="Filtrar por perfume o marca..."
-                      className="w-full bg-[#1c1f30] border border-white/10 rounded-xl pl-9 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400"
+                      placeholder="Buscar por perfume o marca..."
+                      className="w-full bg-[#1c1f30] border border-white/10 rounded-xl pl-8 pr-3 py-2 text-xs text-white placeholder-gray-500 focus:outline-none focus:border-amber-400"
                     />
                   </div>
 
                   <select
                     value={filterCategory}
                     onChange={(e) => setFilterCategory(e.target.value)}
-                    className="bg-[#1c1f30] border border-white/10 rounded-xl px-3 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-400"
+                    className="bg-[#1c1f30] border border-white/10 rounded-xl px-2.5 py-2 text-xs text-gray-200 focus:outline-none focus:border-amber-400 max-w-[130px] sm:max-w-none truncate"
                   >
-                    <option value="all">Todas las Categorías</option>
+                    <option value="all">Todas</option>
                     {categories.map(c => (
                       <option key={c.id} value={c.id}>{c.name}</option>
                     ))}
@@ -294,15 +293,146 @@ export default function AdminPanel({
 
                 <button
                   onClick={() => setActiveTab('new-perfume')}
-                  className="px-4 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-black flex items-center gap-1.5 shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:brightness-110"
+                  className="px-3.5 py-2 rounded-xl text-xs font-semibold bg-gradient-to-r from-amber-400 to-amber-500 text-black flex items-center justify-center gap-1.5 shadow-[0_0_15px_rgba(212,175,55,0.3)] hover:brightness-110 shrink-0 font-bold"
                 >
-                  <Plus className="w-4 h-4" />
+                  <Plus className="w-3.5 h-3.5" />
                   <span>Nuevo Perfume</span>
                 </button>
               </div>
 
-              {/* TABLA RESUMIDA CON EDICIÓN EN LÍNEA DE PRECIOS Y DISPONIBILIDAD */}
-              <div className="bg-[#121420] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
+              {/* LISTA EN TARJETAS PARA MÓVIL (CERO COMPRESIÓN, CÓMODO Y ESPACIOSO) */}
+              <div className="md:hidden space-y-2.5">
+                {filteredPerfumes.length === 0 ? (
+                  <div className="p-8 text-center bg-[#121420] rounded-2xl border border-white/5 text-xs text-gray-400">
+                    No se encontraron perfumes con los filtros seleccionados.
+                  </div>
+                ) : (
+                  filteredPerfumes.map((perf) => (
+                    <div 
+                      key={perf.id} 
+                      className="p-3 rounded-2xl bg-[#121420] border border-sky-500/25 shadow-md space-y-2.5"
+                    >
+                      {/* FILA SUPERIOR: FOTO, INFO Y BOTONES DE EDICIÓN */}
+                      <div className="flex items-start justify-between gap-2.5">
+                        <div className="flex items-center gap-2.5 min-w-0 flex-1">
+                          <img
+                            src={perf.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'}
+                            alt={perf.name}
+                            className="w-12 h-12 rounded-xl object-cover border border-sky-500/30 shrink-0"
+                          />
+                          <div className="min-w-0 flex-1">
+                            <h4 className="font-semibold text-white text-sm truncate leading-tight">
+                              {perf.name}
+                            </h4>
+                            <p className="text-[10px] text-amber-400 uppercase tracking-wider truncate mt-0.5 font-mono">
+                              {perf.brand} • {perf.volume || '100 ml'}
+                            </p>
+                            <span className="inline-block mt-1 px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-[9px] text-gray-300">
+                              {perf.categoryName || 'Sin categoría'}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* ACCIONES: EDITAR COMPLETO & ELIMINAR */}
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => onEditPerfumeModal(perf)}
+                            className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/25 transition-colors"
+                            title="Editar perfume completo"
+                          >
+                            <Edit2 className="w-3.5 h-3.5" />
+                          </button>
+                          <button
+                            onClick={() => {
+                              if (window.confirm(`¿Seguro que deseas eliminar "${perf.name}"?`)) {
+                                onDeletePerfume(perf.id)
+                              }
+                            }}
+                            className="p-2 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 transition-colors"
+                            title="Eliminar perfume"
+                          >
+                            <Trash2 className="w-3.5 h-3.5" />
+                          </button>
+                        </div>
+                      </div>
+
+                      {/* FILA INFERIOR: PRECIO RÁPIDO & TOGGLE DE DISPONIBILIDAD */}
+                      <div className="pt-2 border-t border-white/5 flex items-center justify-between gap-2">
+                        {/* EDICIÓN DE PRECIO */}
+                        <div className="flex-1">
+                          {editingPriceId === perf.id ? (
+                            <div className="flex items-center gap-1.5">
+                              <span className="text-amber-400 font-bold text-xs">$</span>
+                              <input
+                                type="number"
+                                step="0.01"
+                                value={tempPrice}
+                                onChange={(e) => setTempPrice(e.target.value)}
+                                className="w-20 bg-[#1c2035] border border-amber-400 rounded-lg px-2 py-1 text-xs text-white font-mono focus:outline-none"
+                                autoFocus
+                              />
+                              <button
+                                onClick={() => handleSavePrice(perf.id)}
+                                className="p-1 text-emerald-400 hover:bg-emerald-500/20 rounded bg-emerald-950/60"
+                                title="Guardar"
+                              >
+                                <Save className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => setEditingPriceId(null)}
+                                className="p-1 text-gray-400 hover:bg-white/10 rounded"
+                                title="Cancelar"
+                              >
+                                <X className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ) : (
+                            <div
+                              onClick={() => {
+                                setEditingPriceId(perf.id)
+                                setTempPrice(perf.price.toString())
+                              }}
+                              className="inline-flex items-center gap-1.5 cursor-pointer bg-black/50 px-2.5 py-1 rounded-lg border border-white/10 hover:border-amber-400/40"
+                              title="Toca para editar precio"
+                            >
+                              <span className="text-[10px] text-gray-400">Precio:</span>
+                              <span className="font-serif-luxury text-sm font-bold text-amber-300">
+                                ${perf.price}
+                              </span>
+                              <Edit2 className="w-2.5 h-2.5 text-gray-400 ml-0.5" />
+                            </div>
+                          )}
+                        </div>
+
+                        {/* TOGGLE DISPONIBILIDAD */}
+                        <button
+                          onClick={() => onToggleAvailability(perf.id, !perf.available)}
+                          className={`inline-flex items-center gap-1 px-3 py-1 rounded-full text-[11px] font-semibold transition-all shrink-0 ${
+                            perf.available
+                              ? 'bg-emerald-950/80 border border-emerald-500/40 text-emerald-300'
+                              : 'bg-rose-950/80 border border-rose-500/40 text-rose-300'
+                          }`}
+                        >
+                          {perf.available ? (
+                            <>
+                              <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <span>Disponible</span>
+                            </>
+                          ) : (
+                            <>
+                              <XCircle className="w-3 h-3 text-rose-400" />
+                              <span>Agotado</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* TABLA RESUMIDA PARA ESCRITORIO (PANTALLAS MEDIANAS Y GRANDES) */}
+              <div className="hidden md:block bg-[#121420] border border-white/10 rounded-2xl overflow-hidden shadow-xl">
                 <div className="overflow-x-auto">
                   <table className="w-full text-left text-xs">
                     <thead className="bg-[#181a29] text-gray-400 uppercase tracking-wider text-[11px] border-b border-white/5">
