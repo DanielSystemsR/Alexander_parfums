@@ -18,20 +18,20 @@ export default function CategoryFilter({
   }
 
   return (
-    <div className="space-y-4 mb-8">
+    <div className="space-y-2.5 sm:space-y-4 mb-4 sm:mb-8">
       {/* PESTAÑAS DE CATEGORÍAS CON RELIEVE AZUL CROMADO Y DORADO */}
-      <div className="flex items-center gap-2.5 overflow-x-auto pb-2 scrollbar-none">
+      <div className="flex items-center gap-1.5 sm:gap-2.5 overflow-x-auto pb-2 scrollbar-none">
         <button
           onClick={() => onSelectCategory('all')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
             activeCategory === 'all'
-              ? 'bg-gradient-to-r from-[#0284c7] via-[#38bdf8] to-[#0369a1] text-white font-bold border border-sky-300/50 shadow-[0_0_20px_rgba(56,189,248,0.4),inset_0_1px_2px_rgba(255,255,255,0.6)]'
-              : 'bg-[#0a0d16] text-slate-300 hover:text-white hover:bg-[#111726] border border-sky-500/15 hover:border-sky-400/30'
+              ? 'bg-gradient-to-r from-[#0284c7] via-[#38bdf8] to-[#0369a1] text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35)]'
+              : 'bg-[#0a0d16] text-slate-300 hover:text-white hover:bg-[#111726] border border-sky-500/15'
           }`}
         >
-          <Layers className="w-4 h-4 text-amber-300" />
-          <span>Todas las Colecciones</span>
-          <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ${
+          <Layers className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-300" />
+          <span>Todas</span>
+          <span className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.2 rounded-full font-mono font-bold ${
             activeCategory === 'all' 
               ? 'bg-black/30 text-amber-200 border border-amber-300/30' 
               : 'bg-white/5 text-slate-400'
@@ -48,15 +48,15 @@ export default function CategoryFilter({
             <button
               key={cat.id}
               onClick={() => onSelectCategory(cat.id)}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
+              className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-medium whitespace-nowrap transition-all ${
                 isSelected
-                  ? 'bg-gradient-to-r from-[#0284c7] via-[#38bdf8] to-[#0369a1] text-white font-bold border border-sky-300/50 shadow-[0_0_20px_rgba(56,189,248,0.4),inset_0_1px_2px_rgba(255,255,255,0.6)]'
-                  : 'bg-[#0a0d16] text-slate-300 hover:text-white hover:bg-[#111726] border border-sky-500/15 hover:border-sky-400/30'
+                  ? 'bg-gradient-to-r from-[#0284c7] via-[#38bdf8] to-[#0369a1] text-white font-bold border border-sky-300/50 shadow-[0_0_15px_rgba(56,189,248,0.35)]'
+                  : 'bg-[#0a0d16] text-slate-300 hover:text-white hover:bg-[#111726] border border-sky-500/15'
               }`}
             >
-              <Sparkles className={`w-3.5 h-3.5 ${isSelected ? 'text-amber-200' : 'text-amber-400/80'}`} />
+              <Sparkles className={`w-3 h-3 sm:w-3.5 sm:h-3.5 ${isSelected ? 'text-amber-200' : 'text-amber-400/80'}`} />
               <span>{cat.name}</span>
-              <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold ${
+              <span className={`text-[10px] sm:text-[11px] px-1.5 sm:px-2 py-0.2 rounded-full font-mono font-bold ${
                 isSelected 
                   ? 'bg-black/30 text-amber-200 border border-amber-300/30' 
                   : 'bg-white/5 text-slate-400'
