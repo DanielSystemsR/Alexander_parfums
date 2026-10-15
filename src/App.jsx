@@ -373,7 +373,7 @@ export default function App() {
       <FAQSection />
 
       {/* PIE DE PÁGINA */}
-      <Footer onTriggerEasterEgg={() => setIsLoginModalOpen(true)} />
+      <Footer />
 
       {/* MODAL DE DETALLE DEL PERFUME */}
       <PerfumeDetailModal

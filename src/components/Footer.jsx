@@ -1,7 +1,7 @@
 import React from 'react'
-import { Sparkles, Shield, Lock, Award, Heart } from 'lucide-react'
+import { Sparkles, Shield, Award, Heart } from 'lucide-react'
 
-export default function Footer({ onTriggerEasterEgg }) {
+export default function Footer() {
   return (
     <footer className="mt-20 border-t border-sky-500/20 bg-[#04060c] text-slate-400 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -75,16 +75,6 @@ export default function Footer({ onTriggerEasterEgg }) {
           <div className="flex items-center gap-4 text-slate-500">
             <span className="hover:text-slate-300 cursor-pointer transition-colors">Privacidad</span>
             <span className="hover:text-slate-300 cursor-pointer transition-colors">Términos</span>
-
-            {/* EMBLEMA SECRETO DE FOOTER PARA EL EASTER EGG */}
-            <button
-              onClick={onTriggerEasterEgg}
-              title="Acceso restringido (Easter egg: haz clic para ingresar clave)"
-              className="group flex items-center gap-1.5 text-[11px] text-slate-600 hover:text-sky-400 transition-colors opacity-40 hover:opacity-100 bg-[#080d19] px-2.5 py-1 rounded-lg border border-sky-500/20"
-            >
-              <Lock className="w-3 h-3 group-hover:text-amber-300 transition-colors" />
-              <span className="font-mono">Vault</span>
-            </button>
           </div>
         </div>
 
