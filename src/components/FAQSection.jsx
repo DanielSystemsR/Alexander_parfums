@@ -6,7 +6,7 @@ const FAQ_DATA = [
     id: 1,
     icon: ShieldCheck,
     question: "¿Las fragancias son 100% auténticas y originales?",
-    answer: "Absolutamente. En EL ATELIER DEL AROMA comercializamos únicamente lotes legítimos, sellados y con códigos batch verificables directamente con las casas matrices de Europa, Medio Oriente y Estados Unidos. No manejamos réplicas, testeadores genéricos ni imitaciones bajo ningún concepto."
+    answer: "Trabajamos con total transparencia ofreciendo dos líneas claramente identificadas en nuestro catálogo: nuestra Línea Original, compuesta exclusivamente por lotes 100% legítimos, sellados y con códigos batch verificables importados de Europa, Medio Oriente y Estados Unidos; y nuestra Línea Calidad 1:1, compuesta por réplicas de alta gama seleccionadas minuciosamente para ofrecer la máxima fidelidad en aroma, empaque y fijación a un precio más accesible, garantizando que en todo momento sepas exactamente qué categoría estás adquiriendo."
   },
   {
     id: 2,
@@ -54,13 +54,13 @@ export default function FAQSection() {
 
   return (
     <section className="relative py-16 px-4 sm:px-6 lg:px-8 border-t border-sky-500/20 bg-gradient-to-b from-[#05060a] via-[#070b16] to-[#04060c] overflow-hidden">
-      
+
       {/* Luces y resplandores de fondo */}
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-96 h-96 bg-sky-600/10 blur-[130px] rounded-full pointer-events-none" />
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-amber-500/10 blur-[130px] rounded-full pointer-events-none" />
 
       <div className="relative max-w-4xl mx-auto">
-        
+
         {/* ENCABEZADO DE LA SECCIÓN */}
         <div className="text-center mb-12">
           <div className="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-[#0a1122] border border-sky-400/40 text-sky-300 text-xs font-medium mb-3 shadow-[0_0_15px_rgba(56,189,248,0.25)]">
@@ -71,7 +71,7 @@ export default function FAQSection() {
           <h2 className="font-serif-luxury text-3xl sm:text-4xl font-bold tracking-tight text-white mb-3">
             Preguntas <span className="chrome-blue-text font-serif-luxury">Frecuentes</span>
           </h2>
-          
+
           <p className="text-slate-400 text-xs sm:text-sm max-w-lg mx-auto font-light leading-relaxed">
             Todo lo que necesitas saber sobre autenticidad de fragancias, proceso de compra por carrito, métodos de pago y despachos.
           </p>
@@ -84,37 +84,33 @@ export default function FAQSection() {
             const IconComponent = item.icon
 
             return (
-              <div 
+              <div
                 key={item.id}
-                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${
-                  isOpen 
-                    ? 'bg-gradient-to-r from-[#091122] via-[#060b17] to-[#0a1020] border-sky-400/50 shadow-[0_4px_25px_rgba(2,132,199,0.2),inset_0_1px_1px_rgba(255,255,255,0.15)]' 
-                    : 'bg-[#080d19]/80 border-sky-500/15 hover:border-sky-500/35 hover:bg-[#0c1324]/90'
-                }`}
+                className={`rounded-2xl border transition-all duration-300 overflow-hidden ${isOpen
+                  ? 'bg-gradient-to-r from-[#091122] via-[#060b17] to-[#0a1020] border-sky-400/50 shadow-[0_4px_25px_rgba(2,132,199,0.2),inset_0_1px_1px_rgba(255,255,255,0.15)]'
+                  : 'bg-[#080d19]/80 border-sky-500/15 hover:border-sky-500/35 hover:bg-[#0c1324]/90'
+                  }`}
               >
                 <button
                   onClick={() => toggleAccordion(item.id)}
                   className="w-full p-4 sm:p-5 flex items-center justify-between gap-4 text-left focus:outline-none"
                 >
                   <div className="flex items-center gap-3.5 flex-1 min-w-0">
-                    <div className={`p-2 rounded-xl border transition-colors shrink-0 ${
-                      isOpen 
-                        ? 'bg-sky-950/80 border-sky-400/50 text-amber-300 shadow-[0_0_10px_rgba(56,189,248,0.3)]' 
-                        : 'bg-black/40 border-white/10 text-slate-400'
-                    }`}>
+                    <div className={`p-2 rounded-xl border transition-colors shrink-0 ${isOpen
+                      ? 'bg-sky-950/80 border-sky-400/50 text-amber-300 shadow-[0_0_10px_rgba(56,189,248,0.3)]'
+                      : 'bg-black/40 border-white/10 text-slate-400'
+                      }`}>
                       <IconComponent className="w-4 h-4" />
                     </div>
-                    
-                    <span className={`text-sm sm:text-base font-semibold transition-colors ${
-                      isOpen ? 'text-white' : 'text-slate-200'
-                    }`}>
+
+                    <span className={`text-sm sm:text-base font-semibold transition-colors ${isOpen ? 'text-white' : 'text-slate-200'
+                      }`}>
                       {item.question}
                     </span>
                   </div>
 
-                  <div className={`p-1.5 rounded-full transition-transform duration-300 shrink-0 ${
-                    isOpen ? 'rotate-180 text-amber-300 bg-sky-950/60' : 'text-slate-500'
-                  }`}>
+                  <div className={`p-1.5 rounded-full transition-transform duration-300 shrink-0 ${isOpen ? 'rotate-180 text-amber-300 bg-sky-950/60' : 'text-slate-500'
+                    }`}>
                     <ChevronDown className="w-4 h-4" />
                   </div>
                 </button>

@@ -42,7 +42,7 @@ export default function HeroBanner({ totalPerfumes, totalCategories }) {
 
         {/* SUBTÍTULO */}
         <p className="max-w-2xl mx-auto text-xs sm:text-base text-slate-300 font-light leading-relaxed mb-4 sm:mb-8">
-          Explora nuestra selecta curaduría multimarca de fragancias originales, elixires y extractos de estela inconfundible, longevidad extrema y autenticidad garantizada.
+          Encuentra tu aroma ideal. Ofrecemos fragancias originales certificadas y opciones calidad 1:1 de alta durabilidad. La mejor variedad en perfumería multimarca para todos los gustos y presupuestos.
         </p>
 
         {/* CINTA DE CONFIANZA */}
