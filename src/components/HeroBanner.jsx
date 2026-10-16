@@ -49,7 +49,7 @@ export default function HeroBanner({ totalPerfumes, totalCategories }) {
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 sm:gap-4 max-w-4xl mx-auto pt-3 sm:pt-4 border-t border-sky-500/15">
           <div className="flex items-center justify-center gap-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-[#080d19]/80 border border-sky-500/20 shadow-[0_4px_15px_rgba(2,132,199,0.1)] hover:border-sky-400/50 transition-colors">
             <Award className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-amber-400 shrink-0" />
-            <span className="text-[10px] sm:text-xs text-slate-200 font-medium">100% Originales</span>
+            <span className="text-[10px] sm:text-xs text-slate-200 font-medium">100% Variedad Original y 1.1</span>
           </div>
 
           <div className="flex items-center justify-center gap-2 p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-[#080d19]/80 border border-sky-500/20 shadow-[0_4px_15px_rgba(2,132,199,0.1)] hover:border-sky-400/50 transition-colors">
