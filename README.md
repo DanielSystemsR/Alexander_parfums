@@ -11,7 +11,7 @@ Catálogo moderno de perfumes con carrito de compras y panel administrativo ocul
 - **Catálogo por Categorías**: Filtrado dinámico por familias olfativas (Amaderados, Cítricos, Florales, Gourmand, Cuero, etc.).
 - **Información Detallada**: Nombre, casa/marca, precio ($ USD), estado en tiempo real (**Disponible** o **Agotado**), concentración y volumen.
 - **Buscador Inteligente**: Búsqueda instantánea con 3 a 4 sugerencias en tiempo real por nombre de perfume o marca.
-- **Carrito de Compras**: Selección múltiple de artículos con control de cantidad y ticket directo a WhatsApp (+58 412 7661800).
+- **Carrito de Compras**: Selección múltiple de artículos con control de cantidad y ticket directo a WhatsApp (+58 414 3694386).
 - **Filtros Avanzados**: Filtrar por solo disponibles o agotados, y ordenar por precio o destacados.
 - **Modal de Detalle & Pedidos**: Muestra la pirámide olfativa y botón directo de compra vía WhatsApp.
 

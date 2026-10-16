@@ -54,13 +54,13 @@ export default function Footer() {
               Consultas y despachos directos vía WhatsApp con asesores especializados en notas olfativas.
             </p>
             <a
-              href="https://wa.me/584127661800"
+              href="https://wa.me/584143694386"
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-1.5 text-xs text-emerald-400 hover:text-emerald-300 bg-emerald-950/40 hover:bg-emerald-950/70 border border-emerald-500/30 px-3 py-1.5 rounded-full transition-all"
             >
               <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-              <span>WhatsApp: +58 412 7661800</span>
+              <span>WhatsApp: +58 414 3694386</span>
             </a>
           </div>
 

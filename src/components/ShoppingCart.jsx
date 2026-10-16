@@ -33,7 +33,7 @@ export default function ShoppingCart({ isOpen, onClose, cartItems, onUpdateQuant
     return encodeURIComponent(msg)
   }
 
-  const whatsappUrl = `https://wa.me/584127661800?text=${buildWhatsAppMessage()}`
+  const whatsappUrl = `https://wa.me/584143694386?text=${buildWhatsAppMessage()}`
 
   if (!isOpen) return null
 

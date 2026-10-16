@@ -49,7 +49,7 @@ export default function FAQSection() {
 
   const handleWhatsAppHelp = () => {
     const text = encodeURIComponent("¡Hola EL ATELIER DEL AROMA! Tengo una consulta sobre una fragancia de su catálogo.")
-    window.open(`https://wa.me/584127661800?text=${text}`, '_blank')
+    window.open(`https://wa.me/584143694386?text=${text}`, '_blank')
   }
 
   return (
