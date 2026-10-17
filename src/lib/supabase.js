@@ -113,9 +113,28 @@ export async function fetchCategories() {
         return data
       }
     } catch (e) {
-      console.warn('Fallback a almacenamiento local para categorías', e)
+      console.warn('Fallo cliente Supabase para categorías:', e)
     }
   }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/categories?select=*&order=created_at.asc`, {
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`
+      }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(data))
+        return data
+      }
+    }
+  } catch (err) {
+    console.warn('Fallback a almacenamiento local para categorías:', err)
+  }
+
   return localCats
 }
 
@@ -130,9 +149,29 @@ export async function fetchPerfumes() {
         return normalized
       }
     } catch (e) {
-      console.warn('Fallback a almacenamiento local para perfumes', e)
+      console.warn('Fallo cliente Supabase para perfumes:', e)
     }
   }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/perfumes?select=*&order=created_at.desc`, {
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`
+      }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        const normalized = data.map(normalizePerfume)
+        localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(normalized))
+        return normalized
+      }
+    }
+  } catch (err) {
+    console.warn('Fallback a almacenamiento local para perfumes:', err)
+  }
+
   return localPerfs
 }
 
