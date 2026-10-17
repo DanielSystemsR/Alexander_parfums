@@ -12,7 +12,8 @@ import FAQSection from './components/FAQSection'
 import Footer from './components/Footer'
 import { 
   fetchCategories, 
-  fetchPerfumes, 
+  fetchAllPerfumesLight,
+  fetchPerfumesPage,
   createPerfume, 
   updatePerfumePrice, 
   updatePerfumeAvailability, 
@@ -21,18 +22,26 @@ import {
   createCategory, 
   deleteCategory 
 } from './lib/supabase'
-import { Sparkles, PackageOpen, Crown, SlidersHorizontal, CheckCircle2 } from 'lucide-react'
+import { Sparkles, PackageOpen, Crown, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function App() {
-  const [perfumes, setPerfumes] = useState([])
+  const [allPerfumes, setAllPerfumes] = useState([])
   const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
+  const [loadingInitial, setLoadingInitial] = useState(true)
 
   // Filtros de navegación
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [availabilityFilter, setAvailabilityFilter] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
+
+  // Paginación de 5 en 5
+  const [currentPage, setCurrentPage] = useState(1)
+  const ITEMS_PER_PAGE = 5
+
+  // Perfumes con imagen cargados para la página actual
+  const [currentPagePerfumes, setCurrentPagePerfumes] = useState([])
+  const [loadingPage, setLoadingPage] = useState(false)
 
   // Modales
   const [selectedPerfume, setSelectedPerfume] = useState(null)
@@ -46,9 +55,7 @@ export default function App() {
     return sessionStorage.getItem('aura_is_admin') === 'true'
   })
 
-  // ═══════════════════════════════════════════════════════
-  // CARRITO DE COMPRAS
-  // ═══════════════════════════════════════════════════════
+  // Carrito de compras
   const [cartItems, setCartItems] = useState(() => {
     try {
       const saved = localStorage.getItem('aura_cart_v1')
@@ -59,7 +66,6 @@ export default function App() {
   })
   const [isCartOpen, setIsCartOpen] = useState(false)
 
-  // Persistir carrito en localStorage
   useEffect(() => {
     localStorage.setItem('aura_cart_v1', JSON.stringify(cartItems))
   }, [cartItems])
@@ -68,14 +74,12 @@ export default function App() {
     setCartItems(prev => {
       const existing = prev.find(item => item.perfume.id === perfume.id)
       if (existing) {
-        // Ya está en el carrito: incrementar cantidad
         return prev.map(item =>
           item.perfume.id === perfume.id
             ? { ...item, quantity: item.quantity + 1 }
             : item
         )
       }
-      // Nuevo en el carrito
       return [...prev, { perfume, quantity: 1 }]
     })
     showToast(`🛒 "${perfume.name}" añadido al carrito.`)
@@ -106,26 +110,24 @@ export default function App() {
     return cartItems.reduce((sum, item) => sum + item.quantity, 0)
   }, [cartItems])
 
-  // ═══════════════════════════════════════════════════════
-
-  // Cargar datos al iniciar
+  // Cargar catálogo liviano inicial
   useEffect(() => {
-    async function loadData() {
+    async function loadInitial() {
       try {
-        setLoading(true)
+        setLoadingInitial(true)
         const [cats, perfs] = await Promise.all([
           fetchCategories(),
-          fetchPerfumes()
+          fetchAllPerfumesLight()
         ])
         setCategories(cats)
-        setPerfumes(perfs)
+        setAllPerfumes(perfs)
       } catch (err) {
         console.error('Error cargando catálogo:', err)
       } finally {
-        setLoading(false)
+        setLoadingInitial(false)
       }
     }
-    loadData()
+    loadInitial()
   }, [])
 
   const showToast = (message) => {
@@ -135,7 +137,6 @@ export default function App() {
     }, 3000)
   }
 
-  // Login y Logout Admin
   const handleLoginSuccess = () => {
     setIsAdmin(true)
     sessionStorage.setItem('aura_is_admin', 'true')
@@ -150,42 +151,47 @@ export default function App() {
     showToast('Sesión de administrador cerrada.')
   }
 
-  // Acciones sobre Perfumes
-  const handleUpdatePrice = async (id, newPrice) => {
-    await updatePerfumePrice(id, newPrice)
-    setPerfumes(prev => prev.map(p => p.id === id ? { ...p, price: newPrice } : p))
-    showToast('Precio actualizado exitosamente.')
+  const handleToggleAvailability = async (perfume) => {
+    const nextState = !perfume.available
+    await updatePerfumeAvailability(perfume.id, nextState)
+    setAllPerfumes(prev => prev.map(p => p.id === perfume.id ? { ...p, available: nextState } : p))
+    setCurrentPagePerfumes(prev => prev.map(p => p.id === perfume.id ? { ...p, available: nextState } : p))
+    showToast(`Estado actualizado: ${nextState ? 'Disponible' : 'Agotado'}`)
   }
 
-  const handleToggleAvailability = async (id, isAvailable) => {
-    await updatePerfumeAvailability(id, isAvailable)
-    setPerfumes(prev => prev.map(p => p.id === id ? { ...p, available: isAvailable } : p))
-    showToast(isAvailable ? 'Perfume marcado como Disponible.' : 'Perfume marcado como Agotado.')
+  const handleUpdatePrice = async (perfumeId, newPrice) => {
+    await updatePerfumePrice(perfumeId, newPrice)
+    setAllPerfumes(prev => prev.map(p => p.id === perfumeId ? { ...p, price: Number(newPrice) } : p))
+    setCurrentPagePerfumes(prev => prev.map(p => p.id === perfumeId ? { ...p, price: Number(newPrice) } : p))
+    showToast('Precio actualizado exitosamente.')
   }
 
   const handleCreatePerfume = async (perfumeData) => {
     const created = await createPerfume(perfumeData)
-    setPerfumes(prev => [created, ...prev])
+    setAllPerfumes(prev => [created, ...prev])
+    setCurrentPage(1)
     showToast(`Perfume "${created.name}" añadido al catálogo.`)
   }
 
-  const handleSaveFullPerfume = async (id, updatedFields) => {
-    await updateFullPerfume(id, updatedFields)
-    setPerfumes(prev => prev.map(p => p.id === id ? { ...p, ...updatedFields } : p))
-    showToast('Detalles del perfume actualizados.')
+  const handleDeletePerfume = async (perfumeId) => {
+    await deletePerfume(perfumeId)
+    setAllPerfumes(prev => prev.filter(p => p.id !== perfumeId))
+    setCurrentPagePerfumes(prev => prev.filter(p => p.id !== perfumeId))
+    showToast('Perfume eliminado.')
   }
 
-  const handleDeletePerfume = async (id) => {
-    await deletePerfume(id)
-    setPerfumes(prev => prev.filter(p => p.id !== id))
-    showToast('Perfume eliminado del catálogo.')
+  const handleSaveFullEdit = async (id, updatedData) => {
+    await updateFullPerfume(id, updatedData)
+    setAllPerfumes(prev => prev.map(p => p.id === id ? { ...p, ...updatedData } : p))
+    setCurrentPagePerfumes(prev => prev.map(p => p.id === id ? { ...p, ...updatedData } : p))
+    setEditingPerfume(null)
+    showToast('Cambios guardados con éxito.')
   }
 
-  // Acciones sobre Categorías
   const handleCreateCategory = async (catData) => {
-    const created = await createCategory(catData)
-    setCategories(prev => [...prev, created])
-    showToast(`Categoría "${created.name}" creada con éxito.`)
+    const newCat = await createCategory(catData)
+    setCategories(prev => [...prev, newCat])
+    showToast(`Categoría "${newCat.name}" creada.`)
   }
 
   const handleDeleteCategory = async (id) => {
@@ -194,16 +200,14 @@ export default function App() {
     showToast('Categoría eliminada.')
   }
 
-  // Filtrado y Ordenamiento de Perfumes
+  // Filtrado y Ordenamiento
   const filteredPerfumes = useMemo(() => {
-    let list = [...perfumes]
+    let list = [...allPerfumes]
 
-    // Filtro por categoría
     if (activeCategory !== 'all') {
       list = list.filter(p => p.categoryId === activeCategory)
     }
 
-    // Filtro por búsqueda
     if (searchQuery.trim()) {
       const q = searchQuery.toLowerCase()
       list = list.filter(p => 
@@ -214,14 +218,12 @@ export default function App() {
       )
     }
 
-    // Filtro por disponibilidad
     if (availabilityFilter === 'available') {
       list = list.filter(p => p.available)
     } else if (availabilityFilter === 'soldout') {
       list = list.filter(p => !p.available)
     }
 
-    // Ordenamiento
     if (sortBy === 'price-asc') {
       list.sort((a, b) => (a.price || 0) - (b.price || 0))
     } else if (sortBy === 'price-desc') {
@@ -231,12 +233,58 @@ export default function App() {
     }
 
     return list
-  }, [perfumes, activeCategory, searchQuery, availabilityFilter, sortBy])
+  }, [allPerfumes, activeCategory, searchQuery, availabilityFilter, sortBy])
+
+  // Resetear página al filtrar
+  useEffect(() => {
+    setCurrentPage(1)
+  }, [activeCategory, searchQuery, availabilityFilter, sortBy])
+
+  // Cálculo de páginas
+  const totalPages = Math.ceil(filteredPerfumes.length / ITEMS_PER_PAGE) || 1
+
+  // Segmento de 5 perfumes de la página actual
+  const currentSlice = useMemo(() => {
+    const start = (currentPage - 1) * ITEMS_PER_PAGE
+    return filteredPerfumes.slice(start, start + ITEMS_PER_PAGE)
+  }, [filteredPerfumes, currentPage, ITEMS_PER_PAGE])
+
+  // Cargar las 5 fotos correspondientes a la página activa
+  useEffect(() => {
+    let active = true
+    async function load5Perfumes() {
+      if (currentSlice.length === 0) {
+        setCurrentPagePerfumes([])
+        return
+      }
+
+      setLoadingPage(true)
+      const ids = currentSlice.map(p => p.id)
+      const full5 = await fetchPerfumesPage({ ids })
+
+      if (active) {
+        // Enlazar los datos completos con fotos
+        const fullMap = new Map(full5.map(p => [p.id, p]))
+        const merged = currentSlice.map(p => fullMap.get(p.id) || p)
+        setCurrentPagePerfumes(merged)
+        setLoadingPage(false)
+      }
+    }
+
+    load5Perfumes()
+    return () => { active = false }
+  }, [currentSlice])
+
+  const handlePageChange = (page) => {
+    if (page < 1 || page > totalPages) return
+    setCurrentPage(page)
+    const el = document.getElementById('catalogo-section')
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  }
 
   return (
     <div className="min-h-screen bg-[#05060a] text-slate-100 flex flex-col selection:bg-sky-500/30 selection:text-sky-200">
       
-      {/* BARRA SUPERIOR CON EASTER EGG */}
       <Navbar
         isAdmin={isAdmin}
         onOpenAdmin={() => setIsAdminPanelOpen(true)}
@@ -247,22 +295,19 @@ export default function App() {
         activeCategory={activeCategory}
         onSelectCategory={setActiveCategory}
         categories={categories}
-        perfumes={perfumes}
+        perfumes={allPerfumes}
         onSelectPerfume={(p) => setSelectedPerfume(p)}
         cartItemCount={totalCartItems}
         onOpenCart={() => setIsCartOpen(true)}
       />
 
-      {/* BANNER PRINCIPAL */}
       <HeroBanner 
-        totalPerfumes={perfumes.length}
+        totalPerfumes={allPerfumes.length}
         totalCategories={categories.length}
       />
 
-      {/* CONTENIDO PRINCIPAL DEL CATÁLOGO */}
       <main className="max-w-7xl mx-auto px-2.5 sm:px-6 lg:px-8 py-4 sm:py-8 flex-1 w-full">
         
-        {/* BANNER FLOTANTE INDICADOR DE MODO ADMIN SI ESTÁ ACTIVO */}
         {isAdmin && (
           <div className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#0e1830] via-[#081022] to-[#141208] border border-sky-400/40 flex flex-wrap items-center justify-between gap-3 shadow-[0_0_25px_rgba(56,189,248,0.25),inset_0_1px_1px_rgba(255,255,255,0.2)] animate-fade-in">
             <div className="flex items-center gap-3">
@@ -287,22 +332,28 @@ export default function App() {
           </div>
         )}
 
-        {/* FILTROS POR CATEGORÍA, DISPONIBILIDAD Y PRECIO */}
         <CategoryFilter
           categories={categories}
           activeCategory={activeCategory}
           onSelectCategory={setActiveCategory}
-          perfumes={perfumes}
+          perfumes={allPerfumes}
           availabilityFilter={availabilityFilter}
           setAvailabilityFilter={setAvailabilityFilter}
           sortBy={sortBy}
           setSortBy={setSortBy}
         />
 
+        <div id="catalogo-section" className="scroll-mt-24" />
+
         {/* CONTADOR DE RESULTADOS */}
-        <div className="flex items-center justify-between mb-6 text-xs text-gray-400">
+        <div className="flex flex-wrap items-center justify-between gap-2 mb-6 text-xs text-gray-400">
           <span>
-            Mostrando <strong className="text-amber-300">{filteredPerfumes.length}</strong> de {perfumes.length} perfumes
+            Mostrando <strong className="text-amber-300">{currentPagePerfumes.length}</strong> de <strong className="text-white">{filteredPerfumes.length}</strong> perfumes
+            {totalPages > 1 && (
+              <span className="ml-2 text-sky-300 font-mono">
+                (Página {currentPage} de {totalPages})
+              </span>
+            )}
             {activeCategory !== 'all' && (
               <span> en <span className="text-white">"{categories.find(c => c.id === activeCategory)?.name}"</span></span>
             )}
@@ -326,7 +377,7 @@ export default function App() {
         </div>
 
         {/* GRILLA DE PERFUMES */}
-        {loading ? (
+        {loadingInitial ? (
           <div className="py-24 text-center">
             <div className="w-12 h-12 mx-auto mb-4 border-2 border-amber-400/20 border-t-amber-400 rounded-full animate-spin" />
             <p className="text-sm text-gray-400 font-serif-luxury">Cargando colección exclusiva...</p>
@@ -352,30 +403,82 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
-            {filteredPerfumes.map((perfume) => (
-              <PerfumeCard
-                key={perfume.id}
-                perfume={perfume}
-                onSelect={(p) => setSelectedPerfume(p)}
-                isAdmin={isAdmin}
-                onEditPerfume={(p) => setEditingPerfume(p)}
-                onToggleAvailability={handleToggleAvailability}
-                onAddToCart={handleAddToCart}
-              />
-            ))}
-          </div>
+          <>
+            <div className={`grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2.5 sm:gap-6 transition-opacity duration-300 ${loadingPage ? 'opacity-50' : 'opacity-100'}`}>
+              {currentPagePerfumes.map((perfume) => (
+                <PerfumeCard
+                  key={perfume.id}
+                  perfume={perfume}
+                  onSelect={(p) => setSelectedPerfume(p)}
+                  isAdmin={isAdmin}
+                  onEditPerfume={(p) => setEditingPerfume(p)}
+                  onToggleAvailability={handleToggleAvailability}
+                  onAddToCart={handleAddToCart}
+                />
+              ))}
+            </div>
+
+            {/* BARRA DE PAGINACIÓN DE 5 EN 5 */}
+            {totalPages > 1 && (
+              <div className="mt-10 sm:mt-14 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-[#070b16] via-[#091122] to-[#070b16] border border-sky-500/30 shadow-[0_4px_25px_rgba(2,132,199,0.15)]">
+                <div className="text-xs text-slate-400">
+                  Página <span className="text-white font-semibold">{currentPage}</span> de <span className="text-white font-semibold">{totalPages}</span> (5 perfumes por página)
+                </div>
+
+                <div className="flex items-center gap-1.5 sm:gap-2">
+                  <button
+                    onClick={() => handlePageChange(currentPage - 1)}
+                    disabled={currentPage === 1}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                    <span className="hidden xs:inline">Anterior</span>
+                  </button>
+
+                  <div className="flex items-center gap-1">
+                    {Array.from({ length: totalPages }, (_, i) => i + 1)
+                      .filter(num => num === 1 || num === totalPages || Math.abs(num - currentPage) <= 2)
+                      .map((pageNumber, idx, arr) => {
+                        const prev = arr[idx - 1]
+                        return (
+                          <React.Fragment key={pageNumber}>
+                            {prev && pageNumber - prev > 1 && (
+                              <span className="text-slate-500 px-1">...</span>
+                            )}
+                            <button
+                              onClick={() => handlePageChange(pageNumber)}
+                              className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all ${
+                                currentPage === pageNumber
+                                  ? 'bg-gradient-to-r from-sky-400 to-amber-300 text-black shadow-[0_0_15px_rgba(56,189,248,0.4)] scale-105'
+                                  : 'border border-sky-500/20 bg-[#06080f] text-slate-300 hover:border-sky-400/50 hover:text-white'
+                              }`}
+                            >
+                              {pageNumber}
+                            </button>
+                          </React.Fragment>
+                        )
+                      })}
+                  </div>
+
+                  <button
+                    onClick={() => handlePageChange(currentPage + 1)}
+                    disabled={currentPage === totalPages}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                  >
+                    <span className="hidden xs:inline">Siguiente</span>
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              </div>
+            )}
+          </>
         )}
 
       </main>
 
-      {/* SECCIÓN DE PREGUNTAS FRECUENTES (FAQ) */}
       <FAQSection />
-
-      {/* PIE DE PÁGINA */}
       <Footer />
 
-      {/* MODAL DE DETALLE DEL PERFUME */}
       <PerfumeDetailModal
         perfume={selectedPerfume}
         isOpen={Boolean(selectedPerfume)}
@@ -383,18 +486,24 @@ export default function App() {
         onAddToCart={handleAddToCart}
       />
 
-      {/* MODAL DE LOGIN ADMIN (EASTER EGG) */}
+      <EditPerfumeModal
+        perfume={editingPerfume}
+        categories={categories}
+        isOpen={Boolean(editingPerfume)}
+        onClose={() => setEditingPerfume(null)}
+        onSave={handleSaveFullEdit}
+      />
+
       <AdminLoginModal
         isOpen={isLoginModalOpen}
         onClose={() => setIsLoginModalOpen(false)}
         onLoginSuccess={handleLoginSuccess}
       />
 
-      {/* PANEL DE ADMINISTRACIÓN COMPLETO */}
       <AdminPanel
         isOpen={isAdminPanelOpen}
         onClose={() => setIsAdminPanelOpen(false)}
-        perfumes={perfumes}
+        perfumes={allPerfumes}
         categories={categories}
         onUpdatePrice={handleUpdatePrice}
         onToggleAvailability={handleToggleAvailability}
@@ -405,16 +514,6 @@ export default function App() {
         onEditPerfumeModal={(p) => setEditingPerfume(p)}
       />
 
-      {/* MODAL DE EDICIÓN COMPLETA (ADMIN) - Renderizado sobre el AdminPanel con z-[70] */}
-      <EditPerfumeModal
-        perfume={editingPerfume}
-        isOpen={Boolean(editingPerfume)}
-        onClose={() => setEditingPerfume(null)}
-        onSave={handleSaveFullPerfume}
-        categories={categories}
-      />
-
-      {/* CARRITO DE COMPRAS */}
       <ShoppingCart
         isOpen={isCartOpen}
         onClose={() => setIsCartOpen(false)}
@@ -424,11 +523,9 @@ export default function App() {
         onClearCart={handleClearCart}
       />
 
-      {/* TOAST FLOTANTE */}
       {toastMessage && (
-        <div className="fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-2xl bg-[#141624] border border-amber-500/40 text-amber-200 text-xs font-medium shadow-[0_0_25px_rgba(212,175,55,0.25)] animate-fade-in">
-          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
-          <span>{toastMessage}</span>
+        <div className="fixed bottom-6 right-6 z-50 bg-[#0a1122] border border-sky-400 text-sky-100 px-4 py-3 rounded-2xl shadow-[0_0_30px_rgba(56,189,248,0.4)] text-xs font-semibold animate-bounce">
+          {toastMessage}
         </div>
       )}
 

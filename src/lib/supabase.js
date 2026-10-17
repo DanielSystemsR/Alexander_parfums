@@ -20,43 +20,31 @@ export const supabase = isSupabaseConfigured
   ? createClient(supabaseUrl, supabaseAnonKey)
   : null
 
-// Categorías iniciales por defecto
 export const DEFAULT_CATEGORIES = []
-
-
-// Perfumes iniciales por defecto con imágenes de alta calidad
 export const DEFAULT_PERFUMES = []
 
-
-// Capa de Almacenamiento Local (Fallback inteligente)
 const STORAGE_KEYS = {
-  PERFUMES: 'aura_perfumes_v3',
-  CATEGORIES: 'aura_categories_v3'
+  PERFUMES: 'aura_perfumes_v5',
+  CATEGORIES: 'aura_categories_v5'
 }
 
 export function getLocalCategories() {
   const data = localStorage.getItem(STORAGE_KEYS.CATEGORIES)
-  if (!data) {
-    localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(DEFAULT_CATEGORIES))
-    return DEFAULT_CATEGORIES
-  }
+  if (!data) return []
   try {
     return JSON.parse(data)
   } catch (e) {
-    return DEFAULT_CATEGORIES
+    return []
   }
 }
 
 export function getLocalPerfumes() {
   const data = localStorage.getItem(STORAGE_KEYS.PERFUMES)
-  if (!data) {
-    localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(DEFAULT_PERFUMES))
-    return DEFAULT_PERFUMES
-  }
+  if (!data) return []
   try {
     return JSON.parse(data)
   } catch (e) {
-    return DEFAULT_PERFUMES
+    return []
   }
 }
 
@@ -102,21 +90,9 @@ function toSupabasePerfumePayload(p) {
   }
 }
 
-// Data API con soporte dual y estrategia Stale-While-Revalidate (Carga instantánea)
+// 1. Obtener categorías
 export async function fetchCategories() {
   const localCats = getLocalCategories()
-  if (supabase) {
-    try {
-      const { data, error } = await supabase.from('categories').select('*').order('created_at', { ascending: true })
-      if (!error && data && data.length > 0) {
-        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(data))
-        return data
-      }
-    } catch (e) {
-      console.warn('Fallo cliente Supabase para categorías:', e)
-    }
-  }
-
   try {
     const res = await fetch(`${supabaseUrl}/rest/v1/categories?select=*&order=created_at.asc`, {
       headers: {
@@ -132,29 +108,16 @@ export async function fetchCategories() {
       }
     }
   } catch (err) {
-    console.warn('Fallback a almacenamiento local para categorías:', err)
+    console.warn('Error cargando categorías:', err)
   }
-
   return localCats
 }
 
-export async function fetchPerfumes() {
-  const localPerfs = getLocalPerfumes()
-  if (supabase) {
-    try {
-      const { data, error } = await supabase.from('perfumes').select('*').order('created_at', { ascending: false })
-      if (!error && data && data.length > 0) {
-        const normalized = data.map(normalizePerfume)
-        localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(normalized))
-        return normalized
-      }
-    } catch (e) {
-      console.warn('Fallo cliente Supabase para perfumes:', e)
-    }
-  }
-
+// 2. Obtener lista completa liviana (sin imágenes base64 gigantes) para buscador, filtros, navbar y admin
+export async function fetchAllPerfumesLight() {
   try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/perfumes?select=*&order=created_at.desc`, {
+    const fields = 'id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,featured,created_at'
+    const res = await fetch(`${supabaseUrl}/rest/v1/perfumes?select=${fields}&order=created_at.desc`, {
       headers: {
         'apikey': supabaseAnonKey,
         'Authorization': `Bearer ${supabaseAnonKey}`
@@ -162,17 +125,66 @@ export async function fetchPerfumes() {
     })
     if (res.ok) {
       const data = await res.json()
-      if (Array.isArray(data) && data.length > 0) {
-        const normalized = data.map(normalizePerfume)
-        localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(normalized))
-        return normalized
+      if (Array.isArray(data)) {
+        return data.map(normalizePerfume)
       }
     }
   } catch (err) {
-    console.warn('Fallback a almacenamiento local para perfumes:', err)
+    console.warn('Error cargando lista liviana de perfumes:', err)
   }
+  return []
+}
 
-  return localPerfs
+// 3. Obtener lote de 5 perfumes con sus fotos completas para la página actual
+export async function fetchPerfumesPage({ page = 1, pageSize = 5, categoryId = 'all', searchQuery = '', ids = [] } = {}) {
+  try {
+    let url = `${supabaseUrl}/rest/v1/perfumes?select=id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,image_url,featured,created_at`
+    
+    if (ids && ids.length > 0) {
+      url += `&id=in.(${ids.map(id => encodeURIComponent(id)).join(',')})`
+      const res = await fetch(url, {
+        headers: {
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`
+        }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        return Array.isArray(data) ? data.map(normalizePerfume) : []
+      }
+    } else {
+      const from = (page - 1) * pageSize
+      const to = from + pageSize - 1
+      url += '&order=created_at.desc'
+      if (categoryId && categoryId !== 'all') {
+        url += `&category_id=eq.${encodeURIComponent(categoryId)}`
+      }
+      if (searchQuery && searchQuery.trim()) {
+        const q = searchQuery.trim()
+        url += `&or=(name.ilike.*\b${encodeURIComponent(q)}*,brand.ilike.*\b${encodeURIComponent(q)}*)`
+      }
+
+      const res = await fetch(url, {
+        headers: {
+          'apikey': supabaseAnonKey,
+          'Authorization': `Bearer ${supabaseAnonKey}`,
+          'Range-Unit': 'items',
+          'Range': `${from}-${to}`
+        }
+      })
+      if (res.ok) {
+        const data = await res.json()
+        return Array.isArray(data) ? data.map(normalizePerfume) : []
+      }
+    }
+  } catch (err) {
+    console.error('Error cargando perfumes por lote:', err)
+  }
+  return []
+}
+
+export async function fetchPerfumes() {
+  return fetchAllPerfumesLight()
 }
 
 export async function createCategory(categoryData) {
@@ -236,9 +248,6 @@ export async function createPerfume(perfumeData) {
     }
   }
 
-  const current = getLocalPerfumes()
-  const updated = [newPerf, ...current]
-  localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(updated))
   return newPerf
 }
 
@@ -251,9 +260,6 @@ export async function updatePerfumePrice(perfumeId, newPrice) {
       console.error('Error actualizando precio en Supabase:', e)
     }
   }
-  const current = getLocalPerfumes()
-  const updated = current.map(p => p.id === perfumeId ? { ...p, price: priceNum } : p)
-  localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(updated))
   return true
 }
 
@@ -265,9 +271,6 @@ export async function updatePerfumeAvailability(perfumeId, isAvailable) {
       console.error('Error actualizando disponibilidad en Supabase:', e)
     }
   }
-  const current = getLocalPerfumes()
-  const updated = current.map(p => p.id === perfumeId ? { ...p, available: isAvailable } : p)
-  localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(updated))
   return true
 }
 
@@ -281,9 +284,6 @@ export async function updateFullPerfume(perfumeId, updatedFields) {
       console.error('Error actualizando perfume en Supabase:', e)
     }
   }
-  const current = getLocalPerfumes()
-  const updated = current.map(p => p.id === perfumeId ? { ...p, ...updatedFields } : p)
-  localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(updated))
   return true
 }
 
@@ -295,75 +295,5 @@ export async function deletePerfume(perfumeId) {
       console.error('Error eliminando perfume en Supabase:', e)
     }
   }
-  const current = getLocalPerfumes()
-  const updated = current.filter(p => p.id !== perfumeId)
-  localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(updated))
   return true
 }
-
-export const SUPABASE_SQL_SCHEMA = `-- =========================================================
--- ESQUEMA SQL PARA SUPABASE - ALEXANDER MAISON DE PARFUMS
--- Copia y pega esto en: https://app.supabase.com -> Tu Proyecto -> SQL Editor -> Run
--- =========================================================
-
--- 1. Tabla de Categorías (Familias Olfativas)
-CREATE TABLE IF NOT EXISTS categories (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  slug TEXT NOT NULL,
-  description TEXT,
-  icon TEXT DEFAULT 'Sparkles',
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 2. Tabla de Perfumes
-CREATE TABLE IF NOT EXISTS perfumes (
-  id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
-  brand TEXT NOT NULL,
-  category_id TEXT REFERENCES categories(id) ON DELETE SET NULL,
-  category_name TEXT,
-  price NUMERIC(10, 2) NOT NULL DEFAULT 0,
-  available BOOLEAN DEFAULT TRUE,
-  volume TEXT DEFAULT '100 ml',
-  concentration TEXT DEFAULT 'Eau de Parfum',
-  notes_top TEXT,
-  notes_heart TEXT,
-  notes_base TEXT,
-  description TEXT,
-  image_url TEXT,
-  featured BOOLEAN DEFAULT FALSE,
-  created_at TIMESTAMPTZ DEFAULT NOW()
-);
-
--- 3. Habilitar RLS (Row Level Security)
-ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
-ALTER TABLE perfumes ENABLE ROW LEVEL SECURITY;
-
--- 4. POLÍTICAS RLS (Row Level Security)
--- Lectura pública para clientes (cualquiera puede ver el catálogo)
-CREATE POLICY "Permitir lectura publica de categorias" 
-  ON categories FOR SELECT USING (true);
-
-CREATE POLICY "Permitir lectura publica de perfumes" 
-  ON perfumes FOR SELECT USING (true);
-
--- Operaciones de administración (insertar, editar precios y borrar)
-CREATE POLICY "Permitir insertar categorias" 
-  ON categories FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Permitir actualizar categorias" 
-  ON categories FOR UPDATE USING (true);
-
-CREATE POLICY "Permitir eliminar categorias" 
-  ON categories FOR DELETE USING (true);
-
-CREATE POLICY "Permitir insertar perfumes" 
-  ON perfumes FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Permitir actualizar perfumes" 
-  ON perfumes FOR UPDATE USING (true);
-
-CREATE POLICY "Permitir eliminar perfumes" 
-  ON perfumes FOR DELETE USING (true);
-`
