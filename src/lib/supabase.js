@@ -274,33 +274,38 @@ function toSupabasePerfumePayload(p) {
   }
 }
 
-// Data API con soporte dual (Supabase si está configurado, LocalStorage como respaldo)
+// Data API con soporte dual y estrategia Stale-While-Revalidate (Carga instantánea)
 export async function fetchCategories() {
+  const localCats = getLocalCategories()
   if (supabase) {
     try {
       const { data, error } = await supabase.from('categories').select('*').order('created_at', { ascending: true })
       if (!error && data && data.length > 0) {
+        localStorage.setItem(STORAGE_KEYS.CATEGORIES, JSON.stringify(data))
         return data
       }
     } catch (e) {
       console.warn('Fallback a almacenamiento local para categorías', e)
     }
   }
-  return getLocalCategories()
+  return localCats
 }
 
 export async function fetchPerfumes() {
+  const localPerfs = getLocalPerfumes()
   if (supabase) {
     try {
       const { data, error } = await supabase.from('perfumes').select('*').order('created_at', { ascending: false })
       if (!error && data && data.length > 0) {
-        return data.map(normalizePerfume)
+        const normalized = data.map(normalizePerfume)
+        localStorage.setItem(STORAGE_KEYS.PERFUMES, JSON.stringify(normalized))
+        return normalized
       }
     } catch (e) {
       console.warn('Fallback a almacenamiento local para perfumes', e)
     }
   }
-  return getLocalPerfumes()
+  return localPerfs
 }
 
 export async function createCategory(categoryData) {

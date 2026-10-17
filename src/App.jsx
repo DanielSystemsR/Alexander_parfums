@@ -19,14 +19,17 @@ import {
   updateFullPerfume, 
   deletePerfume, 
   createCategory, 
-  deleteCategory 
+  deleteCategory,
+  getLocalCategories,
+  getLocalPerfumes
 } from './lib/supabase'
 import { Sparkles, PackageOpen, Crown, SlidersHorizontal, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
 
 export default function App() {
-  const [perfumes, setPerfumes] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
+  // Inicialización instantánea con caché local (cero espera en pantalla)
+  const [perfumes, setPerfumes] = useState(() => getLocalPerfumes())
+  const [categories, setCategories] = useState(() => getLocalCategories())
+  const [loading, setLoading] = useState(() => getLocalPerfumes().length === 0)
 
   // Filtros de navegación
   const [activeCategory, setActiveCategory] = useState('all')
@@ -117,17 +120,19 @@ export default function App() {
 
   // ═══════════════════════════════════════════════════════
 
-  // Cargar datos al iniciar
+  // Cargar datos al iniciar con sincronización transparente en segundo plano
   useEffect(() => {
     async function loadData() {
       try {
-        setLoading(true)
+        if (perfumes.length === 0) {
+          setLoading(true)
+        }
         const [cats, perfs] = await Promise.all([
           fetchCategories(),
           fetchPerfumes()
         ])
-        setCategories(cats)
-        setPerfumes(perfs)
+        if (cats && cats.length > 0) setCategories(cats)
+        if (perfs && perfs.length > 0) setPerfumes(perfs)
       } catch (err) {
         console.error('Error cargando catálogo:', err)
       } finally {
