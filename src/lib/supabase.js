@@ -1,9 +1,12 @@
 import { createClient } from '@supabase/supabase-js'
 
-// Variables de entorno para Supabase (opcionales al inicio, fallback a LocalStorage)
-const rawUrl = (import.meta.env.VITE_SUPABASE_URL || localStorage.getItem('aura_supabase_url') || '').trim()
+// Variables de entorno para Supabase (con fallback a las credenciales del proyecto de Supabase)
+const FALLBACK_SUPABASE_URL = 'https://omjncrgeeyjaslcjxalo.supabase.co'
+const FALLBACK_SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9tam5jcmdlZXlqYXNsY2p4YWxvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTE4NTAxNTEsImV4cCI6MjEwNzQyNjE1MX0.zEHHt1qWXHLeJdfbfKVH9YgAV_AnfYAPnNi9LrYbt6o'
+
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL || localStorage.getItem('aura_supabase_url') || FALLBACK_SUPABASE_URL).trim()
 const supabaseUrl = rawUrl.replace(/\/rest\/v1\/?$/, '').replace(/\/+$/, '')
-const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || localStorage.getItem('aura_supabase_key') || '').trim()
+const supabaseAnonKey = (import.meta.env.VITE_SUPABASE_ANON_KEY || localStorage.getItem('aura_supabase_key') || FALLBACK_SUPABASE_ANON_KEY).trim()
 
 export const isSupabaseConfigured = Boolean(
   supabaseUrl && 
