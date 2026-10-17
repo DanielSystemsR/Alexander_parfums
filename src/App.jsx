@@ -19,32 +19,20 @@ import {
   updateFullPerfume, 
   deletePerfume, 
   createCategory, 
-  deleteCategory,
-  getLocalCategories,
-  getLocalPerfumes
+  deleteCategory 
 } from './lib/supabase'
-import { Sparkles, PackageOpen, Crown, SlidersHorizontal, CheckCircle2, ChevronLeft, ChevronRight } from 'lucide-react'
+import { Sparkles, PackageOpen, Crown, SlidersHorizontal, CheckCircle2 } from 'lucide-react'
 
 export default function App() {
-  // Inicialización instantánea con caché local (cero espera en pantalla)
-  const [perfumes, setPerfumes] = useState(() => getLocalPerfumes())
-  const [categories, setCategories] = useState(() => getLocalCategories())
-  const [loading, setLoading] = useState(() => getLocalPerfumes().length === 0)
+  const [perfumes, setPerfumes] = useState([])
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
 
   // Filtros de navegación
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [availabilityFilter, setAvailabilityFilter] = useState('all')
   const [sortBy, setSortBy] = useState('featured')
-
-  // Paginación (10 perfumes por página para carga ultra rápida)
-  const [currentPage, setCurrentPage] = useState(1)
-  const ITEMS_PER_PAGE = 10
-
-  // Resetear a la página 1 cuando cambie cualquier filtro
-  useEffect(() => {
-    setCurrentPage(1)
-  }, [activeCategory, searchQuery, availabilityFilter, sortBy])
 
   // Modales
   const [selectedPerfume, setSelectedPerfume] = useState(null)
@@ -120,19 +108,17 @@ export default function App() {
 
   // ═══════════════════════════════════════════════════════
 
-  // Cargar datos al iniciar con sincronización transparente en segundo plano
+  // Cargar datos al iniciar
   useEffect(() => {
     async function loadData() {
       try {
-        if (perfumes.length === 0) {
-          setLoading(true)
-        }
+        setLoading(true)
         const [cats, perfs] = await Promise.all([
           fetchCategories(),
           fetchPerfumes()
         ])
-        if (cats && cats.length > 0) setCategories(cats)
-        if (perfs && perfs.length > 0) setPerfumes(perfs)
+        setCategories(cats)
+        setPerfumes(perfs)
       } catch (err) {
         console.error('Error cargando catálogo:', err)
       } finally {
@@ -247,22 +233,6 @@ export default function App() {
     return list
   }, [perfumes, activeCategory, searchQuery, availabilityFilter, sortBy])
 
-  // Paginación: cálculo de páginas y porción actual de 10 en 10
-  const totalPages = Math.ceil(filteredPerfumes.length / ITEMS_PER_PAGE) || 1
-  const paginatedPerfumes = useMemo(() => {
-    const startIndex = (currentPage - 1) * ITEMS_PER_PAGE
-    return filteredPerfumes.slice(startIndex, startIndex + ITEMS_PER_PAGE)
-  }, [filteredPerfumes, currentPage, ITEMS_PER_PAGE])
-
-  const handlePageChange = (page) => {
-    if (page < 1 || page > totalPages) return
-    setCurrentPage(page)
-    const catalogElement = document.getElementById('catalogo-section')
-    if (catalogElement) {
-      catalogElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
-    }
-  }
-
   return (
     <div className="min-h-screen bg-[#05060a] text-slate-100 flex flex-col selection:bg-sky-500/30 selection:text-sky-200">
       
@@ -329,18 +299,10 @@ export default function App() {
           setSortBy={setSortBy}
         />
 
-        {/* CONTENEDOR ANCLA PARA SCROLL */}
-        <div id="catalogo-section" className="scroll-mt-24" />
-
-        {/* CONTADOR DE RESULTADOS Y PÁGINA ACTUAL */}
-        <div className="flex flex-wrap items-center justify-between gap-2 mb-6 text-xs text-gray-400">
+        {/* CONTADOR DE RESULTADOS */}
+        <div className="flex items-center justify-between mb-6 text-xs text-gray-400">
           <span>
-            Mostrando <strong className="text-amber-300">{paginatedPerfumes.length}</strong> de <strong className="text-white">{filteredPerfumes.length}</strong> perfumes
-            {totalPages > 1 && (
-              <span className="ml-2 text-sky-300 font-mono">
-                (Página {currentPage} de {totalPages})
-              </span>
-            )}
+            Mostrando <strong className="text-amber-300">{filteredPerfumes.length}</strong> de {perfumes.length} perfumes
             {activeCategory !== 'all' && (
               <span> en <span className="text-white">"{categories.find(c => c.id === activeCategory)?.name}"</span></span>
             )}
@@ -390,69 +352,19 @@ export default function App() {
             </button>
           </div>
         ) : (
-          <>
-            <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
-              {paginatedPerfumes.map((perfume) => (
-                <PerfumeCard
-                  key={perfume.id}
-                  perfume={perfume}
-                  onSelect={(p) => setSelectedPerfume(p)}
-                  isAdmin={isAdmin}
-                  onEditPerfume={(p) => setEditingPerfume(p)}
-                  onToggleAvailability={handleToggleAvailability}
-                  onAddToCart={handleAddToCart}
-                />
-              ))}
-            </div>
-
-            {/* BARRA DE PAGINACIÓN ELEGANTE (10 EN 10) */}
-            {totalPages > 1 && (
-              <div className="mt-10 sm:mt-14 flex flex-col sm:flex-row items-center justify-between gap-4 p-4 rounded-2xl bg-gradient-to-r from-[#070b16] via-[#091122] to-[#070b16] border border-sky-500/30 shadow-[0_4px_25px_rgba(2,132,199,0.15)]">
-                <div className="text-xs text-slate-400">
-                  Página <span className="text-white font-semibold">{currentPage}</span> de <span className="text-white font-semibold">{totalPages}</span> (10 perfumes por página)
-                </div>
-
-                <div className="flex items-center gap-1.5 sm:gap-2">
-                  {/* Botón Anterior */}
-                  <button
-                    onClick={() => handlePageChange(currentPage - 1)}
-                    disabled={currentPage === 1}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                  >
-                    <ChevronLeft className="w-4 h-4" />
-                    <span className="hidden xs:inline">Anterior</span>
-                  </button>
-
-                  {/* Números de página */}
-                  <div className="flex items-center gap-1">
-                    {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNumber) => (
-                      <button
-                        key={pageNumber}
-                        onClick={() => handlePageChange(pageNumber)}
-                        className={`w-8 h-8 rounded-xl text-xs font-semibold transition-all ${
-                          currentPage === pageNumber
-                            ? 'bg-gradient-to-r from-sky-400 to-amber-300 text-black shadow-[0_0_15px_rgba(56,189,248,0.4)] scale-105'
-                            : 'border border-sky-500/20 bg-[#06080f] text-slate-300 hover:border-sky-400/50 hover:text-white'
-                        }`}
-                      >
-                        {pageNumber}
-                      </button>
-                    ))}
-                  </div>
-
-                  {/* Botón Siguiente */}
-                  <button
-                    onClick={() => handlePageChange(currentPage + 1)}
-                    disabled={currentPage === totalPages}
-                    className="flex items-center gap-1 px-3 py-1.5 rounded-xl text-xs font-medium border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
-                  >
-                    <span className="hidden xs:inline">Siguiente</span>
-                    <ChevronRight className="w-4 h-4" />
-                  </button>
-                </div>
-              </div>
-            )}
-          </>
+          <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6">
+            {filteredPerfumes.map((perfume) => (
+              <PerfumeCard
+                key={perfume.id}
+                perfume={perfume}
+                onSelect={(p) => setSelectedPerfume(p)}
+                isAdmin={isAdmin}
+                onEditPerfume={(p) => setEditingPerfume(p)}
+                onToggleAvailability={handleToggleAvailability}
+                onAddToCart={handleAddToCart}
+              />
+            ))}
+          </div>
         )}
 
       </main>
