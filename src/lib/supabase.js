@@ -113,7 +113,7 @@ export async function fetchCategories() {
   return localCats
 }
 
-// 2. Obtener lista completa liviana (sin imágenes base64 gigantes) para buscador, filtros, navbar y admin
+// 2. Obtener lista liviana inicial para que la web cargue en menos de 0.5s
 export async function fetchAllPerfumesLight() {
   try {
     const fields = 'id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,featured,created_at'
@@ -136,49 +136,43 @@ export async function fetchAllPerfumesLight() {
 }
 
 // 3. Obtener lote de 5 perfumes con sus fotos completas para la página actual
-export async function fetchPerfumesPage({ page = 1, pageSize = 5, categoryId = 'all', searchQuery = '', ids = [] } = {}) {
+export async function fetchPerfumesPage({ ids = [] } = {}) {
   try {
-    let url = `${supabaseUrl}/rest/v1/perfumes?select=id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,image_url,featured,created_at`
-    
-    if (ids && ids.length > 0) {
-      url += `&id=in.(${ids.map(id => encodeURIComponent(id)).join(',')})`
-      const res = await fetch(url, {
-        headers: {
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${supabaseAnonKey}`
-        }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        return Array.isArray(data) ? data.map(normalizePerfume) : []
+    if (!ids || ids.length === 0) return []
+    const url = `${supabaseUrl}/rest/v1/perfumes?select=id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,image_url,featured,created_at&id=in.(${ids.map(id => encodeURIComponent(id)).join(',')})`
+    const res = await fetch(url, {
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`
       }
-    } else {
-      const from = (page - 1) * pageSize
-      const to = from + pageSize - 1
-      url += '&order=created_at.desc'
-      if (categoryId && categoryId !== 'all') {
-        url += `&category_id=eq.${encodeURIComponent(categoryId)}`
-      }
-      if (searchQuery && searchQuery.trim()) {
-        const q = searchQuery.trim()
-        url += `&or=(name.ilike.*\b${encodeURIComponent(q)}*,brand.ilike.*\b${encodeURIComponent(q)}*)`
-      }
-
-      const res = await fetch(url, {
-        headers: {
-          'apikey': supabaseAnonKey,
-          'Authorization': `Bearer ${supabaseAnonKey}`,
-          'Range-Unit': 'items',
-          'Range': `${from}-${to}`
-        }
-      })
-      if (res.ok) {
-        const data = await res.json()
-        return Array.isArray(data) ? data.map(normalizePerfume) : []
-      }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      return Array.isArray(data) ? data.map(normalizePerfume) : []
     }
   } catch (err) {
     console.error('Error cargando perfumes por lote:', err)
+  }
+  return []
+}
+
+// 4. Obtener todos los perfumes con sus fotos completas (para buscador y admin en segundo plano)
+export async function fetchAllPerfumesFull() {
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/perfumes?select=*&order=created_at.desc`, {
+      headers: {
+        'apikey': supabaseAnonKey,
+        'Authorization': `Bearer ${supabaseAnonKey}`
+      }
+    })
+    if (res.ok) {
+      const data = await res.json()
+      if (Array.isArray(data) && data.length > 0) {
+        return data.map(normalizePerfume)
+      }
+    }
+  } catch (err) {
+    console.warn('Error cargando catálogo completo en segundo plano:', err)
   }
   return []
 }

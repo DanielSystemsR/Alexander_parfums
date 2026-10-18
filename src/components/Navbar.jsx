@@ -185,9 +185,12 @@ export default function Navbar({
                       className="p-2.5 flex items-center gap-3 hover:bg-sky-950/40 cursor-pointer transition-colors group"
                     >
                       <img 
-                        src={perfume.imageUrl} 
+                        src={perfume.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
                         alt={perfume.name} 
-                        className="w-10 h-10 rounded-lg object-cover border border-sky-500/20 group-hover:border-amber-400/50 shrink-0"
+                        onError={(e) => {
+                          e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
+                        }}
+                        className="w-10 h-10 rounded-lg object-cover border border-sky-500/20 group-hover:border-amber-400/50 shrink-0 bg-slate-900"
                       />
                       <div className="flex-1 min-w-0">
                         <div className="text-xs font-semibold text-white group-hover:text-amber-200 truncate">
@@ -307,9 +310,12 @@ export default function Navbar({
                     className="p-2.5 flex items-center gap-3 active:bg-sky-950/60"
                   >
                     <img 
-                      src={perfume.imageUrl} 
+                      src={perfume.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
                       alt={perfume.name} 
-                      className="w-9 h-9 rounded object-cover border border-sky-500/20"
+                      onError={(e) => {
+                        e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
+                      }}
+                      className="w-9 h-9 rounded object-cover border border-sky-500/20 bg-slate-900"
                     />
                     <div className="flex-1 min-w-0 text-left">
                       <div className="text-xs font-semibold text-white truncate">{perfume.name}</div>

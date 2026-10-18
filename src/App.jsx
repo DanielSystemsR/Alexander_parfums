@@ -13,6 +13,7 @@ import Footer from './components/Footer'
 import { 
   fetchCategories, 
   fetchAllPerfumesLight,
+  fetchAllPerfumesFull,
   fetchPerfumesPage,
   createPerfume, 
   updatePerfumePrice, 
@@ -110,7 +111,7 @@ export default function App() {
     return cartItems.reduce((sum, item) => sum + item.quantity, 0)
   }, [cartItems])
 
-  // Cargar catálogo liviano inicial
+  // Cargar catálogo liviano inicial para renderizado instantáneo
   useEffect(() => {
     async function loadInitial() {
       try {
@@ -125,6 +126,19 @@ export default function App() {
         console.error('Error cargando catálogo:', err)
       } finally {
         setLoadingInitial(false)
+      }
+
+      // Carga en segundo plano de imágenes completas para el buscador y el panel de administración
+      try {
+        const fullPerfs = await fetchAllPerfumesFull()
+        if (fullPerfs && fullPerfs.length > 0) {
+          setAllPerfumes(prev => {
+            const fullMap = new Map(fullPerfs.map(p => [p.id, p]))
+            return prev.map(p => fullMap.get(p.id) || p)
+          })
+        }
+      } catch (e) {
+        console.warn('Error sincronizando fotos completas en segundo plano:', e)
       }
     }
     loadInitial()
