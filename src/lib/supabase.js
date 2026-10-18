@@ -113,6 +113,19 @@ export async function fetchCategories() {
   return localCats
 }
 
+// Cache en memoria para almacenar las imágenes de perfumes ya cargadas
+const imageCache = new Map()
+
+export function getCachedImageUrl(id) {
+  return imageCache.get(id) || null
+}
+
+export function setCachedImageUrl(id, imageUrl) {
+  if (id && imageUrl) {
+    imageCache.set(id, imageUrl)
+  }
+}
+
 // 2. Obtener lista liviana inicial para que la web cargue en menos de 0.5s
 export async function fetchAllPerfumesLight() {
   try {
@@ -135,11 +148,29 @@ export async function fetchAllPerfumesLight() {
   return []
 }
 
-// 3. Obtener lote de 5 perfumes con sus fotos completas para la página actual
-export async function fetchPerfumesPage({ ids = [] } = {}) {
+// 3. Carga rápida de imágenes bajo demanda (para la página actual, buscador o admin)
+export async function fetchPerfumeImages(ids = []) {
+  if (!ids || ids.length === 0) return {}
+
+  const result = {}
+  const missingIds = []
+
+  ids.forEach(id => {
+    if (!id) return
+    if (imageCache.has(id)) {
+      result[id] = imageCache.get(id)
+    } else {
+      missingIds.push(id)
+    }
+  })
+
+  if (missingIds.length === 0) {
+    return result
+  }
+
   try {
-    if (!ids || ids.length === 0) return []
-    const url = `${supabaseUrl}/rest/v1/perfumes?select=id,name,brand,category_id,category_name,price,available,volume,concentration,notes_top,notes_heart,notes_base,description,image_url,featured,created_at&id=in.(${ids.map(id => encodeURIComponent(id)).join(',')})`
+    const filter = missingIds.map(id => '%22' + encodeURIComponent(id) + '%22').join(',')
+    const url = `${supabaseUrl}/rest/v1/perfumes?select=id,image_url&id=in.(${filter})`
     const res = await fetch(url, {
       headers: {
         'apikey': supabaseAnonKey,
@@ -148,32 +179,37 @@ export async function fetchPerfumesPage({ ids = [] } = {}) {
     })
     if (res.ok) {
       const data = await res.json()
-      return Array.isArray(data) ? data.map(normalizePerfume) : []
+      if (Array.isArray(data)) {
+        data.forEach(item => {
+          if (item && item.id) {
+            const img = item.image_url || ''
+            imageCache.set(item.id, img)
+            result[item.id] = img
+          }
+        })
+      }
     }
   } catch (err) {
-    console.error('Error cargando perfumes por lote:', err)
+    console.warn('Error cargando imágenes bajo demanda:', err)
+  }
+
+  return result
+}
+
+// 4. Obtener lote de perfumes para la página activa con sus imágenes
+export async function fetchPerfumesPage({ ids = [] } = {}) {
+  try {
+    if (!ids || ids.length === 0) return []
+    const imageMap = await fetchPerfumeImages(ids)
+    return ids.map(id => ({ id, imageUrl: imageMap[id] || '' }))
+  } catch (err) {
+    console.error('Error en fetchPerfumesPage:', err)
   }
   return []
 }
 
-// 4. Obtener todos los perfumes con sus fotos completas (para buscador y admin en segundo plano)
 export async function fetchAllPerfumesFull() {
-  try {
-    const res = await fetch(`${supabaseUrl}/rest/v1/perfumes?select=*&order=created_at.desc`, {
-      headers: {
-        'apikey': supabaseAnonKey,
-        'Authorization': `Bearer ${supabaseAnonKey}`
-      }
-    })
-    if (res.ok) {
-      const data = await res.json()
-      if (Array.isArray(data) && data.length > 0) {
-        return data.map(normalizePerfume)
-      }
-    }
-  } catch (err) {
-    console.warn('Error cargando catálogo completo en segundo plano:', err)
-  }
+  // Desactivado para evitar descargas masivas de 20MB que saturan la red
   return []
 }
 
@@ -230,12 +266,18 @@ export async function createPerfume(perfumeData) {
     created_at: new Date().toISOString()
   }
 
+  if (newPerf.imageUrl) {
+    setCachedImageUrl(id, newPerf.imageUrl)
+  }
+
   if (supabase) {
     try {
       const payload = toSupabasePerfumePayload(newPerf)
       const { data, error } = await supabase.from('perfumes').insert([payload]).select()
       if (!error && data && data[0]) {
-        return normalizePerfume(data[0])
+        const norm = normalizePerfume(data[0])
+        if (norm.imageUrl) setCachedImageUrl(norm.id, norm.imageUrl)
+        return norm
       }
     } catch (e) {
       console.error('Error insertando perfume en Supabase:', e)
@@ -269,6 +311,9 @@ export async function updatePerfumeAvailability(perfumeId, isAvailable) {
 }
 
 export async function updateFullPerfume(perfumeId, updatedFields) {
+  if (updatedFields && updatedFields.imageUrl) {
+    setCachedImageUrl(perfumeId, updatedFields.imageUrl)
+  }
   if (supabase) {
     try {
       const payload = toSupabasePerfumePayload({ id: perfumeId, ...updatedFields })

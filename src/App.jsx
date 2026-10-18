@@ -13,8 +13,8 @@ import Footer from './components/Footer'
 import { 
   fetchCategories, 
   fetchAllPerfumesLight,
-  fetchAllPerfumesFull,
-  fetchPerfumesPage,
+  fetchPerfumeImages,
+  getCachedImageUrl,
   createPerfume, 
   updatePerfumePrice, 
   updatePerfumeAvailability, 
@@ -126,19 +126,6 @@ export default function App() {
         console.error('Error cargando catálogo:', err)
       } finally {
         setLoadingInitial(false)
-      }
-
-      // Carga en segundo plano de imágenes completas para el buscador y el panel de administración
-      try {
-        const fullPerfs = await fetchAllPerfumesFull()
-        if (fullPerfs && fullPerfs.length > 0) {
-          setAllPerfumes(prev => {
-            const fullMap = new Map(fullPerfs.map(p => [p.id, p]))
-            return prev.map(p => fullMap.get(p.id) || p)
-          })
-        }
-      } catch (e) {
-        console.warn('Error sincronizando fotos completas en segundo plano:', e)
       }
     }
     loadInitial()
@@ -263,7 +250,23 @@ export default function App() {
     return filteredPerfumes.slice(start, start + ITEMS_PER_PAGE)
   }, [filteredPerfumes, currentPage, ITEMS_PER_PAGE])
 
-  // Cargar las 5 fotos correspondientes a la página activa
+  // Función para seleccionar un perfume asegurando que cargue su imagen si aún no la tiene
+  const handleSelectPerfume = useCallback(async (perfume) => {
+    if (!perfume) return
+    const cachedImg = getCachedImageUrl(perfume.id)
+    const initial = { ...perfume, imageUrl: perfume.imageUrl || cachedImg || '' }
+    setSelectedPerfume(initial)
+
+    if (!initial.imageUrl) {
+      const imgs = await fetchPerfumeImages([perfume.id])
+      if (imgs[perfume.id]) {
+        setSelectedPerfume(prev => prev && prev.id === perfume.id ? { ...prev, imageUrl: imgs[perfume.id] } : prev)
+        setAllPerfumes(prev => prev.map(p => p.id === perfume.id ? { ...p, imageUrl: imgs[perfume.id] } : p))
+      }
+    }
+  }, [])
+
+  // Cargar las 5 fotos correspondientes a la página activa bajo demanda
   useEffect(() => {
     let active = true
     async function load5Perfumes() {
@@ -272,16 +275,42 @@ export default function App() {
         return
       }
 
+      // 1. Mostrar de inmediato los perfumes con los datos y fotos que ya tengamos en caché
+      const immediate = currentSlice.map(p => ({
+        ...p,
+        imageUrl: p.imageUrl || getCachedImageUrl(p.id) || ''
+      }))
+      setCurrentPagePerfumes(immediate)
+
+      // 2. Verificar si falta alguna foto
+      const missingIds = currentSlice
+        .filter(p => !p.imageUrl && !getCachedImageUrl(p.id))
+        .map(p => p.id)
+
+      if (missingIds.length === 0) {
+        setLoadingPage(false)
+        return
+      }
+
       setLoadingPage(true)
-      const ids = currentSlice.map(p => p.id)
-      const full5 = await fetchPerfumesPage({ ids })
+      const imageMap = await fetchPerfumeImages(missingIds)
 
       if (active) {
-        // Enlazar los datos completos con fotos
-        const fullMap = new Map(full5.map(p => [p.id, p]))
-        const merged = currentSlice.map(p => fullMap.get(p.id) || p)
+        const merged = currentSlice.map(p => ({
+          ...p,
+          imageUrl: p.imageUrl || imageMap[p.id] || getCachedImageUrl(p.id) || ''
+        }))
         setCurrentPagePerfumes(merged)
         setLoadingPage(false)
+
+        // Actualizar allPerfumes para que el buscador y el panel admin también tengan las fotos
+        setAllPerfumes(prev => prev.map(p => {
+          const img = imageMap[p.id]
+          if (img && !p.imageUrl) {
+            return { ...p, imageUrl: img }
+          }
+          return p
+        }))
       }
     }
 
@@ -310,7 +339,8 @@ export default function App() {
         onSelectCategory={setActiveCategory}
         categories={categories}
         perfumes={allPerfumes}
-        onSelectPerfume={(p) => setSelectedPerfume(p)}
+        onSelectPerfume={handleSelectPerfume}
+        onFetchImages={fetchPerfumeImages}
         cartItemCount={totalCartItems}
         onOpenCart={() => setIsCartOpen(true)}
       />
@@ -423,7 +453,7 @@ export default function App() {
                 <PerfumeCard
                   key={perfume.id}
                   perfume={perfume}
-                  onSelect={(p) => setSelectedPerfume(p)}
+                  onSelect={handleSelectPerfume}
                   isAdmin={isAdmin}
                   onEditPerfume={(p) => setEditingPerfume(p)}
                   onToggleAvailability={handleToggleAvailability}
@@ -526,6 +556,7 @@ export default function App() {
         onCreateCategory={handleCreateCategory}
         onDeleteCategory={handleDeleteCategory}
         onEditPerfumeModal={(p) => setEditingPerfume(p)}
+        onFetchImages={fetchPerfumeImages}
       />
 
       <ShoppingCart

@@ -1,8 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useMemo } from 'react'
 import { 
   X, Plus, Edit2, Trash2, ToggleLeft, ToggleRight, DollarSign, 
   Layers, Package, CheckCircle2, XCircle, Sparkles, 
-  Search, Save, ShieldAlert, ArrowLeft
+  Search, Save, ShieldAlert, ArrowLeft, ChevronLeft, ChevronRight
 } from 'lucide-react'
 
 export default function AdminPanel({
@@ -16,13 +16,19 @@ export default function AdminPanel({
   onDeletePerfume,
   onCreateCategory,
   onDeleteCategory,
-  onEditPerfumeModal
+  onEditPerfumeModal,
+  onFetchImages
 }) {
   if (!isOpen) return null
 
   const [activeTab, setActiveTab] = useState('summary') // 'summary' | 'new-perfume' | 'categories'
   const [searchTerm, setSearchTerm] = useState('')
   const [filterCategory, setFilterCategory] = useState('all')
+
+  // Paginación y carga de imágenes bajo demanda en Admin
+  const [adminPage, setAdminPage] = useState(1)
+  const ADMIN_ITEMS_PER_PAGE = 8
+  const [adminImages, setAdminImages] = useState({})
 
   // Estado para edición inline rápida de precios
   const [editingPriceId, setEditingPriceId] = useState(null)
@@ -63,6 +69,31 @@ export default function AdminPanel({
     const matchesCat = filterCategory === 'all' || p.categoryId === filterCategory
     return matchesSearch && matchesCat
   })
+
+  // Resetear a página 1 al filtrar
+  useEffect(() => {
+    setAdminPage(1)
+  }, [searchTerm, filterCategory])
+
+  const adminTotalPages = Math.ceil(filteredPerfumes.length / ADMIN_ITEMS_PER_PAGE) || 1
+
+  const paginatedPerfumes = useMemo(() => {
+    const start = (adminPage - 1) * ADMIN_ITEMS_PER_PAGE
+    return filteredPerfumes.slice(start, start + ADMIN_ITEMS_PER_PAGE)
+  }, [filteredPerfumes, adminPage])
+
+  // Cargar imágenes bajo demanda para los perfumes mostrados en la página de admin
+  useEffect(() => {
+    if (paginatedPerfumes.length === 0) return
+    const missing = paginatedPerfumes.filter(p => !p.imageUrl && !adminImages[p.id])
+    if (missing.length > 0 && onFetchImages) {
+      onFetchImages(missing.map(p => p.id)).then(imgs => {
+        if (imgs && Object.keys(imgs).length > 0) {
+          setAdminImages(prev => ({ ...prev, ...imgs }))
+        }
+      })
+    }
+  }, [paginatedPerfumes, onFetchImages])
 
   // Guardar edición rápida de precio
   const handleSavePrice = (id) => {
@@ -302,12 +333,12 @@ export default function AdminPanel({
 
               {/* LISTA EN TARJETAS PARA MÓVIL (CERO COMPRESIÓN, CÓMODO Y ESPACIOSO) */}
               <div className="md:hidden space-y-2.5">
-                {filteredPerfumes.length === 0 ? (
+                {paginatedPerfumes.length === 0 ? (
                   <div className="p-8 text-center bg-[#121420] rounded-2xl border border-white/5 text-xs text-gray-400">
                     No se encontraron perfumes con los filtros seleccionados.
                   </div>
                 ) : (
-                  filteredPerfumes.map((perf) => (
+                  paginatedPerfumes.map((perf) => (
                     <div 
                       key={perf.id} 
                       className="p-3 rounded-2xl bg-[#121420] border border-sky-500/25 shadow-md space-y-2.5"
@@ -316,9 +347,12 @@ export default function AdminPanel({
                       <div className="flex items-start justify-between gap-2.5">
                         <div className="flex items-center gap-2.5 min-w-0 flex-1">
                           <img
-                            src={perf.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'}
+                            src={perf.imageUrl || adminImages[perf.id] || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'}
                             alt={perf.name}
-                            className="w-12 h-12 rounded-xl object-cover border border-sky-500/30 shrink-0"
+                            onError={(e) => {
+                              e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
+                            }}
+                            className="w-12 h-12 rounded-xl object-cover border border-sky-500/30 shrink-0 bg-[#06080e]"
                           />
                           <div className="min-w-0 flex-1">
                             <h4 className="font-semibold text-white text-sm truncate leading-tight">
@@ -336,7 +370,7 @@ export default function AdminPanel({
                         {/* ACCIONES: EDITAR COMPLETO & ELIMINAR */}
                         <div className="flex items-center gap-1.5 shrink-0">
                           <button
-                            onClick={() => onEditPerfumeModal(perf)}
+                            onClick={() => onEditPerfumeModal({ ...perf, imageUrl: perf.imageUrl || adminImages[perf.id] || '' })}
                             className="p-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/25 transition-colors"
                             title="Editar perfume completo"
                           >
@@ -445,22 +479,25 @@ export default function AdminPanel({
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                      {filteredPerfumes.length === 0 ? (
+                      {paginatedPerfumes.length === 0 ? (
                         <tr>
                           <td colSpan="5" className="py-8 text-center text-gray-500">
                             No se encontraron perfumes con los filtros seleccionados.
                           </td>
                         </tr>
                       ) : (
-                        filteredPerfumes.map((perf) => (
+                        paginatedPerfumes.map((perf) => (
                           <tr key={perf.id} className="hover:bg-white/[0.02] transition-colors">
                             {/* PERFUME (FOTO + NOMBRE + MARCA) */}
                             <td className="py-3 px-4">
                               <div className="flex items-center gap-3">
                                 <img
-                                  src={perf.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'}
+                                  src={perf.imageUrl || adminImages[perf.id] || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'}
                                   alt={perf.name}
-                                  className="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0"
+                                  onError={(e) => {
+                                    e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
+                                  }}
+                                  className="w-10 h-10 rounded-lg object-cover border border-white/10 shrink-0 bg-[#06080e]"
                                 />
                                 <div>
                                   <span className="font-semibold text-white block text-sm">
@@ -556,7 +593,7 @@ export default function AdminPanel({
                             <td className="py-3 px-4 text-right">
                               <div className="flex items-center justify-end gap-2">
                                 <button
-                                  onClick={() => onEditPerfumeModal(perf)}
+                                  onClick={() => onEditPerfumeModal({ ...perf, imageUrl: perf.imageUrl || adminImages[perf.id] || '' })}
                                   className="p-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 transition-colors"
                                   title="Editar todos los campos"
                                 >
@@ -582,6 +619,61 @@ export default function AdminPanel({
                   </table>
                 </div>
               </div>
+
+              {/* BARRA DE PAGINACIÓN DEL PANEL DE ADMINISTRACIÓN */}
+              {adminTotalPages > 1 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-3 p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-[#090d18] border border-sky-500/25 shadow-md text-xs text-slate-300">
+                  <div>
+                    Mostrando <strong className="text-amber-300">{paginatedPerfumes.length}</strong> de <strong className="text-white">{filteredPerfumes.length}</strong> perfumes
+                    <span className="text-sky-300/80 font-mono ml-2">(Página {adminPage} de {adminTotalPages})</span>
+                  </div>
+
+                  <div className="flex items-center gap-1.5 sm:gap-2">
+                    <button
+                      onClick={() => setAdminPage(prev => Math.max(prev - 1, 1))}
+                      disabled={adminPage === 1}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Anterior</span>
+                    </button>
+
+                    <div className="flex items-center gap-1">
+                      {Array.from({ length: adminTotalPages }, (_, i) => i + 1)
+                        .filter(num => num === 1 || num === adminTotalPages || Math.abs(num - adminPage) <= 1)
+                        .map((pageNumber, idx, arr) => {
+                          const prev = arr[idx - 1]
+                          return (
+                            <React.Fragment key={pageNumber}>
+                              {prev && pageNumber - prev > 1 && (
+                                <span className="text-slate-500 px-1">...</span>
+                              )}
+                              <button
+                                onClick={() => setAdminPage(pageNumber)}
+                                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-lg text-xs font-semibold transition-all ${
+                                  adminPage === pageNumber
+                                    ? 'bg-gradient-to-r from-sky-400 to-amber-300 text-black shadow-md font-bold'
+                                    : 'border border-sky-500/20 bg-[#06080f] text-slate-300 hover:border-sky-400/50 hover:text-white'
+                                }`}
+                              >
+                                {pageNumber}
+                              </button>
+                            </React.Fragment>
+                          )
+                        })}
+                    </div>
+
+                    <button
+                      onClick={() => setAdminPage(prev => Math.min(prev + 1, adminTotalPages))}
+                      disabled={adminPage === adminTotalPages}
+                      className="flex items-center gap-1 px-3 py-1.5 rounded-xl border border-sky-500/30 bg-[#06080f] text-slate-300 hover:text-white hover:border-sky-400 disabled:opacity-40 disabled:cursor-not-allowed transition-all"
+                    >
+                      <span>Siguiente</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
 

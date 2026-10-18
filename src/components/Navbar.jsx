@@ -14,12 +14,14 @@ export default function Navbar({
   categories,
   perfumes = [],
   onSelectPerfume,
+  onFetchImages,
   cartItemCount = 0,
   onOpenCart
 }) {
   const [clickCount, setClickCount] = useState(0)
   const [isSearchFocused, setIsSearchFocused] = useState(false)
   const [showMobileSearch, setShowMobileSearch] = useState(false)
+  const [suggestionImages, setSuggestionImages] = useState({})
   const searchContainerRef = useRef(null)
 
   // Manejo del Easter Egg mediante 5 clics silenciosos en el logo
@@ -92,12 +94,29 @@ export default function Navbar({
       .slice(0, 4) // Exactamente entre 3 y 4 sugerencias relevantes
   }, [searchQuery, perfumes])
 
+  // Cargar imágenes bajo demanda para las 3 o 4 sugerencias activas
+  useEffect(() => {
+    if (suggestions.length === 0) return
+    const missing = suggestions.filter(p => !p.imageUrl && !suggestionImages[p.id])
+    if (missing.length > 0 && onFetchImages) {
+      onFetchImages(missing.map(p => p.id)).then(imgs => {
+        if (imgs && Object.keys(imgs).length > 0) {
+          setSuggestionImages(prev => ({ ...prev, ...imgs }))
+        }
+      })
+    }
+  }, [suggestions, onFetchImages])
+
   const handleSelectSuggestion = (perfume) => {
+    const fullPerfume = {
+      ...perfume,
+      imageUrl: perfume.imageUrl || suggestionImages[perfume.id] || ''
+    }
     setSearchQuery(perfume.name)
     setIsSearchFocused(false)
     setShowMobileSearch(false)
     if (onSelectPerfume) {
-      onSelectPerfume(perfume)
+      onSelectPerfume(fullPerfume)
     }
   }
 
@@ -185,7 +204,7 @@ export default function Navbar({
                       className="p-2.5 flex items-center gap-3 hover:bg-sky-950/40 cursor-pointer transition-colors group"
                     >
                       <img 
-                        src={perfume.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
+                        src={perfume.imageUrl || suggestionImages[perfume.id] || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
                         alt={perfume.name} 
                         onError={(e) => {
                           e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
@@ -310,7 +329,7 @@ export default function Navbar({
                     className="p-2.5 flex items-center gap-3 active:bg-sky-950/60"
                   >
                     <img 
-                      src={perfume.imageUrl || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
+                      src={perfume.imageUrl || suggestionImages[perfume.id] || 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'} 
                       alt={perfume.name} 
                       onError={(e) => {
                         e.target.src = 'https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&w=800&q=80'
