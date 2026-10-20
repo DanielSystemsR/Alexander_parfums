@@ -34,7 +34,7 @@ export default function App() {
   const [activeCategory, setActiveCategory] = useState('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [availabilityFilter, setAvailabilityFilter] = useState('all')
-  const [sortBy, setSortBy] = useState('featured')
+  const [sortBy, setSortBy] = useState('name-asc')
 
   // Paginación de 5 en 5
   const [currentPage, setCurrentPage] = useState(1)

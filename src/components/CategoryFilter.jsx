@@ -120,10 +120,10 @@ export default function CategoryFilter({
             onChange={(e) => setSortBy(e.target.value)}
             className="bg-[#0e1322] border border-sky-500/25 text-slate-200 text-xs rounded-lg px-3 py-1.5 focus:outline-none focus:border-sky-400 shadow-[inset_0_1px_2px_rgba(0,0,0,0.5)] cursor-pointer"
           >
+            <option value="name-asc">Nombre: A - Z</option>
             <option value="featured">Destacados</option>
             <option value="price-asc">Precio: Menor a Mayor</option>
             <option value="price-desc">Precio: Mayor a Menor</option>
-            <option value="name-asc">Nombre: A - Z</option>
           </select>
         </div>
 
